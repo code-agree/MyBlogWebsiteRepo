@@ -21,20 +21,12 @@ jobs:
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: "latest"
+          extended: true
 
       - name: Verify Hugo Installation
         run: |
           hugo version
           which hugo
-
-      - name: Debug - Show directory structure and search for config
-        run: |
-          echo "Root directory contents:"
-          ls -la
-          echo "WebsiteRepo directory contents:"
-          ls -la WebsiteRepo
-          echo "Searching for Hugo config files:"
-          find . -name "config.toml" -o -name "config.yaml" -o -name "config.json"
 
       - name: Build
         run: |
@@ -44,7 +36,7 @@ jobs:
           echo "Current directory contents:"
           ls -la
           echo "Running Hugo build:"
-          hugo --minify --debug
+          hugo --minify
 
       - name: Check generated files
         run: ls -R WebsiteRepo/public
