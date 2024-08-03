@@ -26,6 +26,8 @@ jobs:
 
       - name: Build
         run: hugo --minify
+      - name: Check generated files
+        run: ls -R public
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
@@ -33,4 +35,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./WebsiteRepo/public
+          publish_dir: ./public
