@@ -22,11 +22,20 @@ jobs:
         with:
           hugo-version: "latest"
 
+      - name: Debug - Show directory structure
+        run: |
+          echo "Root directory contents:"
+          ls -la
+          echo "WebsiteRepo directory contents:"
+          ls -la WebsiteRepo
+
       - name: Build
-        run: hugo --minify
+        run: |
+          cd WebsiteRepo
+          hugo --minify
 
       - name: Check generated files
-        run: ls -R public
+        run: ls -R WebsiteRepo/public
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
@@ -34,4 +43,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./public
+          publish_dir: ./WebsiteRepo/public
