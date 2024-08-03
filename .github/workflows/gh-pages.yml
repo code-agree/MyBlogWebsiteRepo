@@ -28,14 +28,25 @@ jobs:
           hugo version
           which hugo
 
-      - name: Debug - Check theme and content
+      - name: Compare Environment
         run: |
-          echo "Checking theme directory:"
-          ls -R WebsiteRepo/themes/congo
-          echo "Checking content directory:"
-          ls -R WebsiteRepo/content
-          echo "Checking static directory:"
-          ls -R WebsiteRepo/static
+          echo "GitHub Actions Environment:"
+          uname -a
+          echo "Hugo version:"
+          hugo version
+          echo "Go version:"
+          go version
+          echo "Node.js version:"
+          node -v
+          echo "NPM version:"
+          npm -v
+
+      - name: Install dependencies
+        run: |
+          cd WebsiteRepo
+          if [ -f "package.json" ]; then
+            npm install
+          fi
 
       - name: Build
         run: |
@@ -45,7 +56,7 @@ jobs:
           echo "Current directory contents:"
           ls -la
           echo "Running Hugo build with verbose output:"
-          hugo --minify -v
+          HUGO_RESOURCEDIR="/tmp/hugo_cache" hugo --minify -v
 
       - name: Check generated files
         run: ls -R WebsiteRepo/public
