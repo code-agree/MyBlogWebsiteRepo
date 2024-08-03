@@ -13,9 +13,9 @@ title = "Yu's Blog"
   description = "My awesome website"
 
 [params.author]
-  name = "Your name here"
+  name = "Wenjun Yu"
   image = "img/author.jpg"
-  headline = "I'm only human"
+  headline = "No one"
   bio = "A little bit about you"
   links = [
     { github = "https://github.com/code-agree" }
