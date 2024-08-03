@@ -16,14 +16,19 @@
   weight = 10
 
 [[main]]
-  name = "Categories"
-  pageRef = "categories"
+  name = "Projects"
+  pageRef = "projects"
   weight = 20
 
 [[main]]
   name = "Tags"
   pageRef = "tags"
   weight = 30
+
+[[main]]
+  name = "About"
+  pageRef = "about"
+  weight = 40
 
 [[main]]
   identifier = "search"
