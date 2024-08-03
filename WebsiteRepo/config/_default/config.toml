@@ -17,7 +17,7 @@ enableCodeCopy = true
 # version 3
 #googleAnalytics = "UA-PROPERTY_ID"
 # version 4
-googleAnalytics = "G-MEASUREMENT_ID"
+googleAnalytics = "G-37H045MXRH"
 
 [outputs]
   home = ["HTML", "RSS", "JSON"]

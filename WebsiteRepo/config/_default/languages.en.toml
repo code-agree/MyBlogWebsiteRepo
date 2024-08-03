@@ -18,7 +18,9 @@ title = "Yu's Blog"
   headline = "No one"
   bio = "A little bit about you"
   links = [
-    { github = "https://github.com/code-agree" }
+    { github = "https://github.com/code-agree" },
+    { x-twitter = "https://x.com/flight_from_" },
+    { email = "mailto:lineyua66@gmail.com" }
     ]
   #   { email = "mailto:hello@your_domain.com" },
   #   { link = "https://link-to-some-website.com/" },
@@ -61,6 +63,6 @@ title = "Yu's Blog"
   #   { tumblr = "https://username.tumblr.com" },
   #   { twitch = "https://twitch.tv/username" },
   #   { whatsapp = "https://wa.me/phone-number" },
-  #   { x-twitter = "https://twitter.com/username" },
+  #   { x-twitter = "https://x.com/flight_from_" },
   #   { youtube = "https://youtube.com/username" },
   # ]
