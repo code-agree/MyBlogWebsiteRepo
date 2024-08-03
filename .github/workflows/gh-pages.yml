@@ -1,11 +1,9 @@
-# .github/workflows/gh-pages.yml
-
 name: GitHub Pages
-
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build-deploy:
@@ -14,7 +12,7 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
@@ -26,6 +24,7 @@ jobs:
 
       - name: Build
         run: hugo --minify
+
       - name: Check generated files
         run: ls -R public
 
@@ -35,4 +34,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: .WebsiteRepo/public
+          publish_dir: ./public
