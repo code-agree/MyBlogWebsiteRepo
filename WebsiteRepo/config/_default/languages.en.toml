@@ -3,7 +3,7 @@ languageName = "English"
 languageDirection = "ltr"
 weight = 1
 
-title = "Yu's Blog"
+title = "Yu's Space"
 # copyright = "Copy, _right?_ :thinking_face:"
 
 [params]
@@ -15,7 +15,7 @@ title = "Yu's Blog"
 [params.author]
   name = "Wenjun Yu"
   image = "img/author.jpg"
-  headline = "No one"
+  headline = "I'm Wenjun Yu. Currently learning to walk in LLM without falling on my bottom. Open to collaborating on interesting and innovative projects. :cat:"
   bio = "A little bit about you"
   links = [
     { github = "https://github.com/code-agree" },
