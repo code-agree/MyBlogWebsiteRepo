@@ -1,5 +1,5 @@
 +++
-title = 'How_to_publish_new_blog'
+title = 'How to publish new blog'
 date = 2024-09-02T12:36:27+08:00
 draft = false
 +++
