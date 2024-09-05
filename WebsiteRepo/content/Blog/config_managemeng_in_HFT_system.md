@@ -8,6 +8,57 @@ draft = false
 
 ## 当前方案概述
 
+
+```Mermaid
+
+graph TB
+    CommonLib["Common Library (MMAP)"]
+    Exchange["Exchange"]
+
+    subgraph StrategyAndTrading["StrategyAndTrading Component"]
+        MDR["MarketDataReader"]
+        MDN["MarketDataNormalizer"]
+        SM["StrategyManager"]
+        subgraph Strategies["Strategies"]
+            S1["Strategy 1"]
+            S2["Strategy 2"]
+            SN["Strategy N"]
+        end
+        OG["OrderGenerator"]
+        OV["OrderValidator"]
+        RP["RiskProfiler"]
+        RE["RiskEvaluator"]
+        OM["OrderManager"]
+        OE["OrderExecutor"]
+        OMO["OrderMonitor"]
+        PM["PositionManager"]
+    end
+
+    CommonLib -->|1. Read MMAP| MDR
+    MDR -->|2. Raw Market Data| MDN
+    MDN -->|3. Normalized Data| SM
+    SM -->|4. Distribute Data| Strategies
+    Strategies -->|5. Generate Signals| OG
+    OG -->|6. Create Orders| OV
+    OV -->|7. Validated Orders| RP
+    RP -->|8. Risk Profile| RE
+    RE -->|9. Risk Evaluated Orders| OM
+    OM -->|10. Managed Orders| OE
+    OE <-->|11. Execute Orders| Exchange
+    Exchange -->|12. Execution Results| OMO
+    OMO -->|13. Order Updates| OM
+    OM -->|14. Position Updates| PM
+    PM -.->|15. Position Feedback| SM
+
+    classDef external fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef component fill:#bbf,stroke:#333,stroke-width:1px;
+    classDef strategy fill:#bfb,stroke:#333,stroke-width:1px;
+    class CommonLib,Exchange external;
+    class MDR,MDN,SM,OG,OV,RP,RE,OM,OE,OMO,PM component;
+    class S1,S2,SN strategy;
+
+```
+
 1. Quote进程使用common静态库组件加载配置信息。
 2. 配置信息加载到Quote进程的本地缓存中。
 3. 使用观察者模式订阅common组件中config的变更。
