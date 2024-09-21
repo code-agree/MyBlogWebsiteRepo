@@ -2,7 +2,7 @@
 title = 'How to publish new blog'
 date = 2024-09-02T12:36:27+08:00
 draft = false
-tags = ["技术", "Hugo", "博客"]
+tags = ["Blog"]
 +++
 
 ### workflow
