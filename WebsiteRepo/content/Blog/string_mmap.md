@@ -2,6 +2,7 @@
 title = 'Segmentation Fault Caused by std::string in Memory-Mapped File'
 date = 2024-09-12T15:23:23+08:00
 draft = false
+tags = ["HFT System Design"]
 +++
 
 # 故障复盘报告：内存映射文件中的 std::string 导致的段错误

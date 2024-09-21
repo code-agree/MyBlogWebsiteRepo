@@ -2,6 +2,7 @@
 title = '高频交易系统优化：从WebSocket到市场数据处理的全面解析'
 date = 2024-09-15T04:03:51+08:00
 draft = false
+tags = ["HFT System Design"]
 +++
 # 高频交易系统优化：从WebSocket到市场数据处理的全面解析
 

@@ -2,6 +2,7 @@
 title = 'Analysis of Configuration Management in High-Frequency Trading System'
 date = 2024-09-06T01:47:52+08:00
 draft = false
+tags = ["HFT System Design"]
 +++
 
 # 高频交易系统配置管理方案分析
