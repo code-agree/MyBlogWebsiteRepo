@@ -1,5 +1,5 @@
 +++
-title = 'Atom'
+title = '高频交易系统中的重连机制最佳实践'
 date = 2024-09-27T01:35:21+08:00
 draft = false
 tags = ["HFT System Design", "性能优化"]
