@@ -114,6 +114,7 @@ void StrategyAndTrading::handleReconnect() {
 
 ### 用法
 
+
 `compare_exchange_strong` 是 C++ 标准库中 `std::atomic` 提供的一种原子操作，用于实现无锁编程。它的作用是比较并交换（Compare and Swap, CAS），确保在多线程环境下对变量的更新是原子的。
 
 ### 函数签名
