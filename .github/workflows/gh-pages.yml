@@ -8,11 +8,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
-
+      - name: Setup Node.js
+        uses: actions/setup-node@v4  # 添加 Node.js 设置
+        with:
+          node-version: '20'  # 指定 Node.js 20 版本
+          
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
