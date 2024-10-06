@@ -13,7 +13,7 @@ draft: false
 <embed src="/resume/YUWENJUN_C++.pdf" type="application/pdf" width="100%" height="600px" />
 
 {{< button href="/resume/YUWENJUN_C++.pdf" target="_blank" >}}
-{{< icon "file-pdf" >}} 下载简历 (PDF)
+下载简历 (PDF)
 {{< /button >}}
 
 ## 联系方式
