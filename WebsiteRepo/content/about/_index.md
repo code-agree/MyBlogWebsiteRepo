@@ -17,5 +17,5 @@ draft: false
 ## 联系方式
 
 - Email: lineyua66@gmail.com
-- GitHub: [Your GitHub](https://github.com/code-agree)
-- Twitter: [@YourTwitter](https://twitter.com/flight_from_)
+- GitHub: [GitHub](https://github.com/code-agree)
+- X: [@X](https://twitter.com/flight_from_)
