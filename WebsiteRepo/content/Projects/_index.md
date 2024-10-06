@@ -1,6 +1,6 @@
 ---
-title: "项目"
-description: "我的项目展示"
+title: "Projects"
+description: "My projects"
 date: 2024-08-03T00:00:00+08:00
 draft: false
 ---
