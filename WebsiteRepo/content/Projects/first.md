@@ -1,32 +1,39 @@
 ---
-title: "项目一"
-description: "这是项目一的简短描述"
+title: "Prompt manager"
+description: "Prompt manager"
 date: 2024-08-03T00:00:00+08:00
 draft: false
 tags: ["AI", "机器学习"]
 ---
 
-## 项目概述
+## project description
 
-这里是项目一的详细描述。您可以包括项目的背景、目标、使用的技术等。
+Prompt Manager is a Chrome extension designed to help users save, manage, and quickly access frequently used prompts. It's perfect for writers, customer service representatives, or anyone who often uses repetitive text snippets in their daily work.
 
-## 主要功能
+## Main features
 
-- 功能1
-- 功能2
-- 功能3
+Save and manage text prompts
+Search through saved prompts
+Sort prompts by time or custom order
+Edit existing prompts
+Delete prompts
+One-click copy of prompts
+Import and export prompts for backup or transfer
 
-## 技术栈
+## Technology stack
 
-- 技术1
-- 技术2
-- 技术3
+- React
+- TypeScript
+- TailwindCSS
+- Vite
+- Chrome Extension API
 
-## 项目链接
 
-- [GitHub 仓库](https://github.com/yourusername/project1)
-- [在线演示](https://project1-demo.com)
+## Project link
 
-## 项目截图
+- [GitHub 仓库](https://github.com/code-agree/prompt-manager)
+<!-- - [在线演示](https://project1-demo.com) -->
 
-![项目截图](/img/project1-screenshot.jpg)
+<!-- ## 项目截图 -->
+
+<!-- ![项目截图](/img/project1-screenshot.jpg) -->
