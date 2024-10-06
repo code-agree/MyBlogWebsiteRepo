@@ -3,7 +3,7 @@ title: "Prompt manager"
 description: "Prompt manager"
 date: 2024-08-03T00:00:00+08:00
 draft: false
-tags: ["AI", "机器学习"]
+tags: ["AI", "Prompt"]
 ---
 
 ## project description
