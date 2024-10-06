@@ -1,10 +1,8 @@
 ---
-title: "关于我"
+title: "About Me"
 date: 2024-08-03T00:00:00+08:00
 draft: false
 ---
-
-# 关于我
 
 相信未来，相信技术改变世界；拥抱AI，拥抱未来。
 
@@ -18,6 +16,6 @@ draft: false
 
 ## 联系方式
 
-- Email: your.email@example.com
-- GitHub: [Your GitHub](https://github.com/yourusername)
-- Twitter: [@YourTwitter](https://twitter.com/yourusername)
+- Email: lineyua66@gmail.com
+- GitHub: [Your GitHub](https://github.com/code-agree)
+- Twitter: [@YourTwitter](https://twitter.com/flight_from_)
