@@ -5,4 +5,4 @@ date: 2024-08-03T00:00:00+08:00
 draft: false
 ---
 
-这里是我参与和开发的一些项目。每个项目都代表了我在不同领域的探索和成长。
+This is my projects. Each project represents my exploration and growth in different fields.
