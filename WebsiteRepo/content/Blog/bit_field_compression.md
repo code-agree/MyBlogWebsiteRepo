@@ -2,7 +2,7 @@
 title = '高频交易系统中的位域压缩技术'
 date = 2024-10-13T03:18:35+08:00
 draft = false
-tag 
+tags = ["HFT System Design", "性能优化"]
 +++
 # 高频交易系统中的位域压缩技术
 
