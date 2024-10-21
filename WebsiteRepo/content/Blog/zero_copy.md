@@ -60,7 +60,7 @@ mmap 减少了一次数据拷贝，数据直接从磁盘到用户可访问的内
 
 ## 5. 真正的零拷贝技术
 
-[链接文本](https://xiaolincoding.com/os/8_network_system/zero_copy.html)
+[zero copy](https://xiaolincoding.com/os/8_network_system/zero_copy.html)
 
 虽然 mmap 可以减少拷贝，但真正的零拷贝技术通常指的是：
 
