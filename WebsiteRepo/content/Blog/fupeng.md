@@ -2,6 +2,7 @@
 title = '付鹏HSBC'
 date = 2024-12-01T21:06:34+08:00
 draft = false
+tags = "Others"
 +++
 HSBC 速记
 汇丰私人财富规划
