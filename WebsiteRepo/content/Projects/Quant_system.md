@@ -26,7 +26,7 @@ Independently designed and developed a cutting-edge high-frequency trading syste
 
 | Metric | Performance |
 |--------|-------------|
-| Order Execution Latency | < 200 μs |
+| Order Execution Latency | < 50 μs |
 | Message Processing Throughput | > 1,000 messages/second |
 
 ## Technical Stack
