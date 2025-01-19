@@ -1,5 +1,5 @@
 +++
-title = 'Share_screen'
+title = '使用 Tailscale 实现 MacOS 设备远程连接教程'
 date = 2025-01-19T11:15:08+08:00
 tag = ["MacOs"]
 draft = false
