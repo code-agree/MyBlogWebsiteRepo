@@ -9,7 +9,8 @@ baseURL = "https://code-agree.github.io/"
 defaultContentLanguage = "en"
 
 enableRobotsTXT = true
-paginate = 10
+[pagination]
+  pagerSize = 10
 summaryLength = 1
 enableSearch = true
 enableCodeCopy = true
