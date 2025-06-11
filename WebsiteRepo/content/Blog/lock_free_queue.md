@@ -589,7 +589,7 @@ auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start)
 4. **实际应用**：根据场景选择合适的实现
 
 refs:
-https://www.bluepuni.com/archives/cpp-memory-model/
+[!https://www.bluepuni.com/archives/cpp-memory-model/]
 https://www.1024cores.net/home/lock-free-algorithms/queues
 https://github.com/cameron314/concurrentqueue
 https://rigtorp.se/ringbuffer/
