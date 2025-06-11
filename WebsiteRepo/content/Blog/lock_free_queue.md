@@ -624,7 +624,7 @@ auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start)
 - **最小化同步**：使用最弱的内存序满足需求
 - **渐进优化**：先保证正确性，再优化性能
 
-refs:
+### refs:
 https://www.bluepuni.com/archives/cpp-memory-model/
 https://www.1024cores.net/home/lock-free-algorithms/queues
 https://github.com/cameron314/concurrentqueue
