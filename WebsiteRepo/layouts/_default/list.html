@@ -26,8 +26,32 @@
   </section>
   {{ if .Data.Pages }}
     <section>
+      {{ $orderBy := .Site.Params.list.orderBy | default "date" }}
+      {{ $orderDirection := .Site.Params.list.orderDirection | default "desc" }}
+      
+      {{ $pages := .Pages }}
+      {{ if eq $orderBy "weight" }}
+        {{ if eq $orderDirection "asc" }}
+          {{ $pages = .Pages.ByWeight }}
+        {{ else }}
+          {{ $pages = .Pages.ByWeight.Reverse }}
+        {{ end }}
+      {{ else if eq $orderBy "title" }}
+        {{ if eq $orderDirection "asc" }}
+          {{ $pages = .Pages.ByTitle }}
+        {{ else }}
+          {{ $pages = .Pages.ByTitle.Reverse }}
+        {{ end }}
+      {{ else }}
+        {{ if eq $orderDirection "asc" }}
+          {{ $pages = .Pages.ByDate }}
+        {{ else }}
+          {{ $pages = .Pages.ByDate.Reverse }}
+        {{ end }}
+      {{ end }}
+      
       {{ if $.Params.groupByYear | default ($.Site.Params.list.groupByYear | default true) }}
-        {{ range (.Paginate (.Pages.GroupByDate "2006")).PageGroups }}
+        {{ range (.Paginate ($pages.GroupByDate "2006")).PageGroups }}
           <h2 class="mt-12 text-2xl font-bold text-neutral-700 first:mt-8 dark:text-neutral-300">
             {{ .Key }}
           </h2>
@@ -37,7 +61,7 @@
           {{ end }}
         {{ end }}
       {{ else }}
-        {{ range (.Paginate .Pages).Pages }}
+        {{ range (.Paginate $pages).Pages }}
           {{ partial "article-link.html" . }}
         {{ end }}
       {{ end }}

@@ -64,4 +64,13 @@
       {{ end }}
     </div>
   {{ end }}
+
+  {{- $showDate := .Site.Params.article.showDate | default true }}
+  <div class="flex flex-row flex-wrap items-center">
+    {{- if $showDate }}
+      <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+        {{ .Date | time.Format (.Site.Params.dateFormat | default "2006年1月2日") }}
+      </time>
+    {{- end }}
+  </div>
 {{ end }}
