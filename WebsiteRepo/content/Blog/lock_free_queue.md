@@ -588,15 +588,13 @@ auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start)
 3. **设计权衡**：复杂度vs性能vs适用性
 4. **实际应用**：根据场景选择合适的实现
 
-### 最佳实践
-- **从简单开始**：优先考虑SPSC
-- **按需升级**：只在必要时使用复杂实现
-- **充分测试**：无锁代码的正确性难以保证
-- **性能验证**：实际测量比理论分析更重要
-
-### 未来展望
-- **硬件发展**：新的CPU架构可能带来新的原子操作
-- **编译器优化**：更智能的内存序推导
-- **标准化**：C++标准库可能引入更多无锁数据结构
-
-掌握无锁编程不仅能提升系统性能，更能深入理解计算机系统的本质。在追求极致性能的今天，这些知识将成为高级系统工程师的核心竞争力。
+refs:
+https://www.bluepuni.com/archives/cpp-memory-model/
+https://www.1024cores.net/home/lock-free-algorithms/queues
+https://github.com/cameron314/concurrentqueue
+https://rigtorp.se/ringbuffer/
+https://www.codeproject.com/articles/43510/lock-free-single-producer-single-consumer-circular
+https://github.com/facebook/folly/blob/main/folly/concurrency/UnboundedQueue.h
+https://preshing.com/20120612/an-introduction-to-lock-free-programming/
+https://github.com/cpp-taskflow/cpp-taskflow/wiki/Concurrent-UM-Queues
+http://blog.molecular-matters.com/2011/07/07/lock-free-single-producer-single-consumer-queue/
