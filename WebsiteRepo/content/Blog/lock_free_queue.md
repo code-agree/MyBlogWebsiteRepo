@@ -1,10 +1,10 @@
 +++
 title = '深入理解无锁队列：从原理到实践的完整指南'
-date = 2025-06-11T20:59:00+08:00
+date = 2025-06-11T17:54:19+08:00
 draft = false
-weight = 100
-tags = []
-+++ 
+tags = [ "C++" ]
++++
+
 
 ## 目录
 1. [为什么需要无锁队列？](#why-lockfree)
@@ -118,57 +118,28 @@ if (flag) {       // 可能看到flag=true
 }
 ```
 
-### 2.3 指令重排序：单线程 vs 多线程
+### 2.3 指令重排序
 
-指令重排序的影响在单线程和多线程环境中截然不同：
-
-#### 单线程环境中的重排序
-
-在单线程中，编译器和CPU可以自由重排序指令，但必须保证：
-
-- **as-if-serial语义**：重排序后的执行结果与程序顺序执行的结果完全一致
-- **数据依赖性**：有真实数据依赖的指令不能重排序
-- 对程序员来说是"透明"的
+为了性能，CPU和编译器会重排指令：
 
 ```cpp
-// 单线程中的重排序示例
-int a = 1;      // ①
-int b = 2;      // ② 可能与①重排序，因为无依赖关系
-int c = a + b;  // ③ 不能重排到①②之前，因为有数据依赖
-
-// CPU可能的执行顺序：②①③ 或 ①②③，但结果都相同
-```
-
-#### 多线程环境中的重排序问题
-
-多线程中，重排序会破坏线程间的同步，导致严重问题：
-
-```cpp
-// 多线程中的经典问题
-// 共享变量
+// 源代码
 int data = 0;
 bool ready = false;
 
-// 线程1（生产者）
 void producer() {
-    data = 42;      // ① 
-    ready = true;   // ② 
-    // CPU可能重排序为：② ①
+    data = 42;      // ①
+    ready = true;   // ②
 }
 
-// 线程2（消费者）
-void consumer() {
-    if (ready) {        // ③ 看到ready=true
-        use(data);      // ④ 但可能读到data=0！
-    }
+// CPU可能的执行顺序
+void producer() {
+    ready = true;   // ② 先执行！
+    data = 42;      // ① 后执行
 }
 ```
 
-**关键区别**：
-- **单线程**：重排序不影响程序正确性，编译器/CPU可以自由优化
-- **多线程**：重排序破坏线程间的happen-before关系，需要显式同步
-
-**这就是为什么无锁编程需要内存序**！我们需要工具来控制多线程环境中的指令重排序。
+**这就是为什么需要内存序**！
 
 ---
 
@@ -197,14 +168,12 @@ enum memory_order {
 void producer() {
     data.store(42, memory_order_relaxed);           // ①
     ready.store(true, memory_order_release);        // ② release
-    // release确保①不会重排到②之后
 }
 
 // 消费者线程
 void consumer() {
     if (ready.load(memory_order_acquire)) {         // ③ acquire
         int value = data.load(memory_order_relaxed); // ④
-        // acquire确保④不会重排到③之前
         assert(value == 42); // 保证成功！
     }
 }
@@ -614,19 +583,13 @@ auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start)
 无锁队列是现代高性能系统的关键组件，但选择和实现需要深入理解：
 
 ### 核心要点
-1. **硬件基础**：理解CPU缓存和指令重排序的影响差异
+1. **硬件基础**：理解CPU缓存和指令重排序
 2. **内存序**：掌握acquire-release模型
 3. **设计权衡**：复杂度vs性能vs适用性
 4. **实际应用**：根据场景选择合适的实现
 
-### 关键原则
-- **单线程vs多线程**：重排序的影响截然不同
-- **最小化同步**：使用最弱的内存序满足需求
-- **渐进优化**：先保证正确性，再优化性能
-
 refs:
-https://www.bluepuni.com/archives/cpp-memory-model/
-https://www.bluepuni.com/archives/cpp-memory-model/
+[!https://www.bluepuni.com/archives/cpp-memory-model/]
 https://www.1024cores.net/home/lock-free-algorithms/queues
 https://github.com/cameron314/concurrentqueue
 https://rigtorp.se/ringbuffer/

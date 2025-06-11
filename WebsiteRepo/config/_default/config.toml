@@ -4,10 +4,7 @@
 
 
 theme = "congo"
-baseURL = "https://example.org/"
-languageCode = "zh-cn"
-title = "My Blog Site"
-ignoreLogs = ["warning-partial-superfluous-prefix"]
+baseURL = "https://code-agree.github.io/"
 
 defaultContentLanguage = "en"
 
@@ -26,20 +23,5 @@ googleAnalytics = "G-37H045MXRH"
 [outputs]
   home = ["HTML", "RSS", "JSON"]
 [article]
-  showTableOfContents = false
+  showTableOfContents = true
   showComments = true
-
-[taxonomies]
-  tag = "tags"
-  category = "categories"
-
-[params]
-  # 文章列表设置
-  [params.list]
-    # 启用自定义排序
-    showTableOfContents = false
-    groupByYear = true
-    # 文章排序顺序，可选: "date", "weight", "title"
-    orderBy = "weight"
-    # 排序方向，可选: "asc", "desc"
-    orderDirection = "asc"
