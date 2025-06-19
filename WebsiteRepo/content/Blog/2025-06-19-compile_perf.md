@@ -58,8 +58,9 @@ calculate:
     mov     eax, DWORD PTR [rbp-20]  ; 加载a
     add     eax, eax                 ; a*2
     mov     DWORD PTR [rbp-4], eax   ; 存储temp
-    mov     eax, DWORD PTR [rbp-4]   ; 加载temp
-    add     eax, DWORD PTR [rbp-24]  ; temp+b
+    mov     edx, DWORD PTR [rbp-4]   ; 加载temp到edx
+    mov     eax, DWORD PTR [rbp-24]  ; 加载b到eax
+    add     eax, edx                 ; b+temp
     pop     rbp                      ; 恢复基址指针
     ret                              ; 返回
 ```
@@ -68,9 +69,9 @@ calculate:
 1. 从内存加载a
 2. 计算a*2
 3. 将结果存回内存(temp)
-4. 从内存重新加载temp
-5. 从内存加载b
-6. 计算temp+b
+4. 从内存重新加载temp到edx
+5. 从内存加载b到eax
+6. 计算b+temp
 
 每个变量的每次使用都涉及内存访问，这是-O0效率低下的主要原因。
 
@@ -108,7 +109,7 @@ calculate:
     add     eax, esi        ; (a*2)+b，直接使用参数b
     ret                     ; 返回eax中的结果
 ```
-
+> 具体的优化也区分于GCC的版本
 这里应用了几个关键优化：
 
 1. **寄存器分配优化**：
@@ -497,3 +498,8 @@ je      .exit_loop
 - 适用场景：性能关键型应用，特别是计算密集型工作负载
 
 对于高频交易系统，理解这些底层机制至关重要，因为微秒级的延迟差异可能直接影响交易决策和系统竞争力。在这种场景下，使用-O0进行生产构建几乎总是错误的选择，而-O2或-O3(针对性能关键路径)通常是最佳实践。
+
+
+### 参考文章
+- https://fuzhe1989.github.io/2020/01/22/optimizations-in-cpp-compilers/
+- https://xania.org/202506/how-compiler-explorer-works
