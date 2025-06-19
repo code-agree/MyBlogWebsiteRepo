@@ -1,10 +1,10 @@
-name: GitHub Pages
+name: GitHub Pages Debug
 on:
   push:
     branches:
       - main
 jobs:
-  build-deploy:
+  debug:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -12,26 +12,41 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v4  # 添加 Node.js 设置
-        with:
-          node-version: '20'  # 指定 Node.js 20 版本
+          
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: "latest"
+          hugo-version: "0.121.1"
           extended: true
-
-      - name: Build
+          
+      - name: Debug File System
         run: |
-          hugo --minify
-        working-directory: ./WebsiteRepo
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          external_repository: code-agree/code-agree.github.io
-          publish_branch: main
-          publish_dir: ./WebsiteRepo/public
+          echo "Current directory:"
+          pwd
+          echo "Directory structure:"
+          ls -la
+          echo "WebsiteRepo structure:"
+          ls -la ./WebsiteRepo
+          echo "Layouts directory:"
+          ls -la ./WebsiteRepo/layouts
+          echo "Partials directory:"
+          ls -la ./WebsiteRepo/layouts/partials
+          echo "Home partials:"
+          ls -la ./WebsiteRepo/layouts/partials/home
+          echo "Theme directory:"
+          ls -la ./WebsiteRepo/themes
+          echo "Congo theme directory:"
+          ls -la ./WebsiteRepo/themes/congo
+          echo "Theme layouts directory:"
+          ls -la ./WebsiteRepo/themes/congo/layouts
+          echo "Theme partials directory:"
+          ls -la ./WebsiteRepo/themes/congo/layouts/partials
+          echo "Theme home partials:"
+          ls -la ./WebsiteRepo/themes/congo/layouts/partials/home
+          echo "Hugo environment:"
+          cd ./WebsiteRepo && hugo env
+          
+      - name: Test Build
+        run: |
+          cd ./WebsiteRepo
+          hugo --minify -v 
