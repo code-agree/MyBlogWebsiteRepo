@@ -1,37 +1,37 @@
 name: GitHub Pages
+
 on:
   push:
     branches:
-      - main
+      - stable
+
 jobs:
   build-deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+
       - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
+        uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: "0.121.1"
+          hugo-version: "latest"
           extended: true
 
       - name: Build
-        run: |
-          hugo --minify
-        working-directory: ./WebsiteRepo
+        working-directory: ./exampleSite
+        run: hugo --minify --themesDir ../.. --buildDrafts --baseURL https://jpanther.github.io/congo/
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        if: ${{ github.ref == 'refs/heads/stable' }}
         with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          external_repository: code-agree/code-agree.github.io
-          publish_branch: main
-          publish_dir: ./WebsiteRepo/public 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./exampleSite/public
