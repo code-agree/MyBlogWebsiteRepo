@@ -320,13 +320,13 @@ void MarketDataReader::readingLoop() { while (running) { auto start = std::chron
       <main id="main-content" class="grow">
         
   <article>
-    <header class="max-w-prose">
+    <header class="max-w-4xl">
       
-      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+      <h1 class="mb-8 mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
         高频交易系统优化：从数据读取到系统平衡的思考过程
       </h1>
       
-        <div class="mb-12 mt-8 text-base text-neutral-500 print:hidden dark:text-neutral-400">
+        <div class="mb-10 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
           
 
 
@@ -376,7 +376,7 @@ void MarketDataReader::readingLoop() { while (running) { auto start = std::chron
     </header>
     <section class="prose mt-0 flex max-w-full flex-col dark:prose-invert lg:flex-row">
       
-      <div class="min-h-0 min-w-0 max-w-prose grow">
+      <div class="min-h-0 min-w-0 max-w-4xl grow">
         <h2 id="1-初始问题数据读取效率" class="relative group">1. 初始问题：数据读取效率 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#1-%e5%88%9d%e5%a7%8b%e9%97%ae%e9%a2%98%e6%95%b0%e6%8d%ae%e8%af%bb%e5%8f%96%e6%95%88%e7%8e%87" aria-label="Anchor">#</a></span></h2><p>最初，我们关注的是市场数据读取器本身的效率问题。</p>
 <h3 id="11-轮询方式初始状态" class="relative group">1.1 轮询方式（初始状态） <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#11-%e8%bd%ae%e8%af%a2%e6%96%b9%e5%bc%8f%e5%88%9d%e5%a7%8b%e7%8a%b6%e6%80%81" aria-label="Anchor">#</a></span></h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">MarketDataReader</span><span class="o">::</span><span class="n">readingLoop</span><span class="p">()</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">running</span><span class="p">)</span> <span class="p">{</span>
@@ -497,7 +497,7 @@ void MarketDataReader::readingLoop() { while (running) { auto start = std::chron
 
       </div>
     </section>
-    <footer class="max-w-prose pt-8 print:hidden">
+    <footer class="max-w-4xl pt-8 print:hidden">
       
   <div class="flex">
     

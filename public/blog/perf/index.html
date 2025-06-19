@@ -329,13 +329,13 @@ bool fastParseAggTrade(const std::string_view&amp; json, Common::QuoteData::AggT
       <main id="main-content" class="grow">
         
   <article>
-    <header class="max-w-prose">
+    <header class="max-w-4xl">
       
-      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+      <h1 class="mb-8 mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
         行情数据解析优化最佳实践
       </h1>
       
-        <div class="mb-12 mt-8 text-base text-neutral-500 print:hidden dark:text-neutral-400">
+        <div class="mb-10 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
           
 
 
@@ -385,7 +385,7 @@ bool fastParseAggTrade(const std::string_view&amp; json, Common::QuoteData::AggT
     </header>
     <section class="prose mt-0 flex max-w-full flex-col dark:prose-invert lg:flex-row">
       
-      <div class="min-h-0 min-w-0 max-w-prose grow">
+      <div class="min-h-0 min-w-0 max-w-4xl grow">
         <h1 id="行情数据解析优化最佳实践" class="relative group">行情数据解析优化最佳实践 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#%e8%a1%8c%e6%83%85%e6%95%b0%e6%8d%ae%e8%a7%a3%e6%9e%90%e4%bc%98%e5%8c%96%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5" aria-label="Anchor">#</a></span></h1><h2 id="原始解析方案的性能瓶颈" class="relative group">原始解析方案的性能瓶颈 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#%e5%8e%9f%e5%a7%8b%e8%a7%a3%e6%9e%90%e6%96%b9%e6%a1%88%e7%9a%84%e6%80%a7%e8%83%bd%e7%93%b6%e9%a2%88" aria-label="Anchor">#</a></span></h2><p>原始的 Binance 聚合交易数据解析实现存在多个性能瓶颈，这在高频交易系统中尤为关键。主要问题包括：</p>
 <ol>
 <li>
@@ -561,7 +561,7 @@ bool fastParseAggTrade(const std::string_view&amp; json, Common::QuoteData::AggT
 
       </div>
     </section>
-    <footer class="max-w-prose pt-8 print:hidden">
+    <footer class="max-w-4xl pt-8 print:hidden">
       
   <div class="flex">
     

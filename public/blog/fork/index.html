@@ -320,13 +320,13 @@ pid_t pid = fork(); if (pid &gt; 0) { printf(&#34;父进程\n&#34;); } else if (
       <main id="main-content" class="grow">
         
   <article>
-    <header class="max-w-prose">
+    <header class="max-w-4xl">
       
-      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+      <h1 class="mb-8 mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
         Fork机制详解：从基础到高级应用
       </h1>
       
-        <div class="mb-12 mt-8 text-base text-neutral-500 print:hidden dark:text-neutral-400">
+        <div class="mb-10 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
           
 
 
@@ -376,7 +376,7 @@ pid_t pid = fork(); if (pid &gt; 0) { printf(&#34;父进程\n&#34;); } else if (
     </header>
     <section class="prose mt-0 flex max-w-full flex-col dark:prose-invert lg:flex-row">
       
-      <div class="min-h-0 min-w-0 max-w-prose grow">
+      <div class="min-h-0 min-w-0 max-w-4xl grow">
         <h2 id="1-引言" class="relative group">1. 引言 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#1-%e5%bc%95%e8%a8%80" aria-label="Anchor">#</a></span></h2><p>Fork是Unix/Linux系统中最基本也是最强大的系统调用之一。它允许一个进程创建一个新的进程,这个新进程是原进程的一个几乎完全相同的副本。本次技术分享将深入探讨fork机制,从基本概念到高级应用。</p>
 <h2 id="2-fork的基本原理" class="relative group">2. Fork的基本原理 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#2-fork%e7%9a%84%e5%9f%ba%e6%9c%ac%e5%8e%9f%e7%90%86" aria-label="Anchor">#</a></span></h2><h3 id="21-什么是fork" class="relative group">2.1 什么是Fork <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#21-%e4%bb%80%e4%b9%88%e6%98%affork" aria-label="Anchor">#</a></span></h3><p>Fork是一个系统调用,用于创建一个新的进程。新进程（称为子进程）是调用进程（称为父进程）的一个几乎完全相同的副本。</p>
 <h3 id="22-fork的工作原理" class="relative group">2.2 Fork的工作原理 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#22-fork%e7%9a%84%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86" aria-label="Anchor">#</a></span></h3><p>当一个进程调用fork时:</p>
@@ -528,7 +528,7 @@ pid_t pid = fork(); if (pid &gt; 0) { printf(&#34;父进程\n&#34;); } else if (
 
       </div>
     </section>
-    <footer class="max-w-prose pt-8 print:hidden">
+    <footer class="max-w-4xl pt-8 print:hidden">
       
   <div class="flex">
     

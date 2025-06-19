@@ -314,13 +314,13 @@ void updatePosition(const char* instId, AssetType type, PositionSide side, doubl
       <main id="main-content" class="grow">
         
   <article>
-    <header class="max-w-prose">
+    <header class="max-w-4xl">
       
-      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+      <h1 class="mb-8 mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
         实现高性能低延迟的交易系统设计
       </h1>
       
-        <div class="mb-12 mt-8 text-base text-neutral-500 print:hidden dark:text-neutral-400">
+        <div class="mb-10 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
           
 
 
@@ -370,7 +370,7 @@ void updatePosition(const char* instId, AssetType type, PositionSide side, doubl
     </header>
     <section class="prose mt-0 flex max-w-full flex-col dark:prose-invert lg:flex-row">
       
-      <div class="min-h-0 min-w-0 max-w-prose grow">
+      <div class="min-h-0 min-w-0 max-w-4xl grow">
         <h1 id="高性能低延迟交易系统设计技术分享-update" class="relative group">高性能低延迟交易系统设计：技术分享 update <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#%e9%ab%98%e6%80%a7%e8%83%bd%e4%bd%8e%e5%bb%b6%e8%bf%9f%e4%ba%a4%e6%98%93%e7%b3%bb%e7%bb%9f%e8%ae%be%e8%ae%a1%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab-update" aria-label="Anchor">#</a></span></h1><p>在高频交易和实时金融系统中，性能和延迟是关键因素。本文将分享一些设计和实现高性能低延迟交易系统的关键技术和策略。</p>
 <h2 id="1-数据结构优化" class="relative group">1. 数据结构优化 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#1-%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%bc%98%e5%8c%96" aria-label="Anchor">#</a></span></h2><h3 id="11-内存映射memory-mapped文件" class="relative group">1.1 内存映射（Memory-Mapped）文件 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#11-%e5%86%85%e5%ad%98%e6%98%a0%e5%b0%84memory-mapped%e6%96%87%e4%bb%b6" aria-label="Anchor">#</a></span></h3><p>使用内存映射文件可以显著提高I/O性能，减少系统调用，并允许快速的进程间通信。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MmapOrderBook</span> <span class="p">{</span>
@@ -416,7 +416,7 @@ void updatePosition(const char* instId, AssetType type, PositionSide side, doubl
 
       </div>
     </section>
-    <footer class="max-w-prose pt-8 print:hidden">
+    <footer class="max-w-4xl pt-8 print:hidden">
       
   <div class="flex">
     

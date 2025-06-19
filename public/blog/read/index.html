@@ -302,13 +302,13 @@ std::optional&lt;MappedTickerData&gt; MarketDataStore::readLatestData(const std:
       <main id="main-content" class="grow">
         
   <article>
-    <header class="max-w-prose">
+    <header class="max-w-4xl">
       
-      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+      <h1 class="mb-8 mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
         高频交易系统中的市场数据存储优化
       </h1>
       
-        <div class="mb-12 mt-8 text-base text-neutral-500 print:hidden dark:text-neutral-400">
+        <div class="mb-10 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
           
 
 
@@ -358,7 +358,7 @@ std::optional&lt;MappedTickerData&gt; MarketDataStore::readLatestData(const std:
     </header>
     <section class="prose mt-0 flex max-w-full flex-col dark:prose-invert lg:flex-row">
       
-      <div class="min-h-0 min-w-0 max-w-prose grow">
+      <div class="min-h-0 min-w-0 max-w-4xl grow">
         <h2 id="1-背景介绍" class="relative group">1. 背景介绍 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#1-%e8%83%8c%e6%99%af%e4%bb%8b%e7%bb%8d" aria-label="Anchor">#</a></span></h2><p>在高频交易系统中，市场数据的快速读取和处理是关键性能指标之一。我们的系统使用共享内存来存储和访问实时市场数据，其中 <code>MarketDataStore</code> 类负责管理这些数据。本文将讨论如何优化 <code>MarketDataStore</code> 中的 <code>readLatestData</code> 函数，以提高数据读取的效率。</p>
 <h2 id="2-初始实现" class="relative group">2. 初始实现 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#2-%e5%88%9d%e5%a7%8b%e5%ae%9e%e7%8e%b0" aria-label="Anchor">#</a></span></h2><p>最初的 <code>readLatestData</code> 函数实现如下：</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">MappedTickerData</span><span class="o">&gt;</span> <span class="n">MarketDataStore</span><span class="o">::</span><span class="n">readLatestData</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">symbol</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
@@ -502,7 +502,7 @@ std::optional&lt;MappedTickerData&gt; MarketDataStore::readLatestData(const std:
 
       </div>
     </section>
-    <footer class="max-w-prose pt-8 print:hidden">
+    <footer class="max-w-4xl pt-8 print:hidden">
       
   <div class="flex">
     

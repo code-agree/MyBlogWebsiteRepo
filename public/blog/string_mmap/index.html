@@ -302,13 +302,13 @@ Thread 2 &#34;strategyandtrad&#34; received signal SIGSEGV, Segmentation fault. 
       <main id="main-content" class="grow">
         
   <article>
-    <header class="max-w-prose">
+    <header class="max-w-4xl">
       
-      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+      <h1 class="mb-8 mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
         Segmentation Fault Caused by std::string in Memory-Mapped File
       </h1>
       
-        <div class="mb-12 mt-8 text-base text-neutral-500 print:hidden dark:text-neutral-400">
+        <div class="mb-10 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
           
 
 
@@ -358,7 +358,7 @@ Thread 2 &#34;strategyandtrad&#34; received signal SIGSEGV, Segmentation fault. 
     </header>
     <section class="prose mt-0 flex max-w-full flex-col dark:prose-invert lg:flex-row">
       
-      <div class="min-h-0 min-w-0 max-w-prose grow">
+      <div class="min-h-0 min-w-0 max-w-4xl grow">
         <h1 id="故障复盘报告内存映射文件中的-stdstring-导致的段错误" class="relative group">故障复盘报告：内存映射文件中的 std::string 导致的段错误 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#%e6%95%85%e9%9a%9c%e5%a4%8d%e7%9b%98%e6%8a%a5%e5%91%8a%e5%86%85%e5%ad%98%e6%98%a0%e5%b0%84%e6%96%87%e4%bb%b6%e4%b8%ad%e7%9a%84-stdstring-%e5%af%bc%e8%87%b4%e7%9a%84%e6%ae%b5%e9%94%99%e8%af%af" aria-label="Anchor">#</a></span></h1><h2 id="1-问题描述" class="relative group">1. 问题描述 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#1-%e9%97%ae%e9%a2%98%e6%8f%8f%e8%bf%b0" aria-label="Anchor">#</a></span></h2><p>在使用内存映射文件存储订单数据的过程中，程序在重启后出现段错误。具体表现为在尝试访问存储在内存映射文件中的 <code>Order</code> 结构体的 <code>id</code> 字段时，程序崩溃。</p>
 <h2 id="2-错误信息" class="relative group">2. 错误信息 <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#2-%e9%94%99%e8%af%af%e4%bf%a1%e6%81%af" aria-label="Anchor">#</a></span></h2><p>程序崩溃时的 GDB 调试信息如下：</p>
 <pre tabindex="0"><code>Thread 2 &#34;strategyandtrad&#34; received signal SIGSEGV, Segmentation fault.
@@ -536,7 +536,7 @@ $3 = {id = &lt;error: Cannot access memory at address 0x7f4710000eb0&gt;, instId
 
       </div>
     </section>
-    <footer class="max-w-prose pt-8 print:hidden">
+    <footer class="max-w-4xl pt-8 print:hidden">
       
   <div class="flex">
     
