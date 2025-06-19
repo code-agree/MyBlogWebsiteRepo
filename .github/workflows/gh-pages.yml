@@ -1,10 +1,10 @@
-name: GitHub Pages Debug
+ name: GitHub Pages
 on:
   push:
     branches:
       - main
 jobs:
-  debug:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -13,40 +13,27 @@ jobs:
           submodules: true
           fetch-depth: 0
           
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: "0.121.1"
           extended: true
           
-      - name: Debug File System
-        run: |
-          echo "Current directory:"
-          pwd
-          echo "Directory structure:"
-          ls -la
-          echo "WebsiteRepo structure:"
-          ls -la ./WebsiteRepo
-          echo "Layouts directory:"
-          ls -la ./WebsiteRepo/layouts
-          echo "Partials directory:"
-          ls -la ./WebsiteRepo/layouts/partials
-          echo "Home partials:"
-          ls -la ./WebsiteRepo/layouts/partials/home
-          echo "Theme directory:"
-          ls -la ./WebsiteRepo/themes
-          echo "Congo theme directory:"
-          ls -la ./WebsiteRepo/themes/congo
-          echo "Theme layouts directory:"
-          ls -la ./WebsiteRepo/themes/congo/layouts
-          echo "Theme partials directory:"
-          ls -la ./WebsiteRepo/themes/congo/layouts/partials
-          echo "Theme home partials:"
-          ls -la ./WebsiteRepo/themes/congo/layouts/partials/home
-          echo "Hugo environment:"
-          cd ./WebsiteRepo && hugo env
-          
-      - name: Test Build
+      - name: Build
         run: |
           cd ./WebsiteRepo
-          hugo --minify -v 
+          hugo --minify
+          
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: code-agree/code-agree.github.io
+          publish_branch: main
+          publish_dir: ./WebsiteRepo/public
