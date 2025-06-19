@@ -7,11 +7,17 @@ case "$1" in
   new)
     # Create new article
     if [ -z "$2" ]; then
-      echo "Please provide article path, e.g.: ./blog.sh new Blog/2023-01-01-title.md"
+      echo "Please provide article title, e.g.: ./blog.sh new my-new-post"
       exit 1
     fi
-    hugo new content/$2
-    echo "Article created: content/$2"
+    
+    # Generate filename with current date and time (hour level)
+    DATE_PREFIX=$(date +"%Y-%m-%d-%H")
+    FILENAME="${DATE_PREFIX}-$2.md"
+    
+    # Create the article in the correct directory (blog, lowercase)
+    hugo new content/blog/$FILENAME
+    echo "Article created: content/blog/$FILENAME"
     ;;
     
   preview)
@@ -35,7 +41,7 @@ case "$1" in
     # Help information
     echo "Blog Management Script"
     echo "Usage:"
-    echo "  ./blog.sh new [article_path]  - Create new article"
+    echo "  ./blog.sh new [title]         - Create new article with auto-generated timestamp"
     echo "  ./blog.sh preview             - Preview site locally"
     echo "  ./blog.sh publish \"message\"   - Commit and publish changes"
     ;;
