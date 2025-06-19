@@ -31,7 +31,7 @@ jobs:
           echo "WebsiteRepo structure:"
           ls -la ./WebsiteRepo
           echo "Layouts directory:"
-          ls -la ./WebsiteRepo/layouts
+          ls -la ./WebsiteRepo/layouts1
           echo "Partials directory:"
           ls -la ./WebsiteRepo/layouts/partials
           echo "Home partials:"
