@@ -21,7 +21,7 @@ title = "Yu's Space"
     { github = "https://github.com/code-agree" },
     { x-twitter = "https://x.com/flight_from_" },
     { email = "mailto:lineyua66@gmail.com" }
-    ]
+  ]
   #   { email = "mailto:hello@your_domain.com" },
   #   { link = "https://link-to-some-website.com/" },
   #   { amazon = "https://www.amazon.com/hz/wishlist/ls/wishlist-id" },
