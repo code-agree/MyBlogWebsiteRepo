@@ -1,0 +1,27 @@
+# -- Site Configuration --
+# Refer to the theme docs for more details about each of these parameters.
+# https://jpanther.github.io/congo/docs/getting-started/
+
+
+theme = "congo"
+baseURL = "https://code-agree.github.io/"
+
+defaultContentLanguage = "en"
+
+enableRobotsTXT = true
+[pagination]
+  pagerSize = 10
+summaryLength = 1
+enableSearch = true
+enableCodeCopy = true
+
+# version 3
+#googleAnalytics = "UA-PROPERTY_ID"
+# version 4
+googleAnalytics = "G-37H045MXRH"
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+[article]
+  showTableOfContents = true
+  showComments = true

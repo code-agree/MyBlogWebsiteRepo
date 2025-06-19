@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 获取当前日期
-DATE=$(date +"%Y-%m-%d")
+DATE=$(date +"%Y-%m-%d %H")
 
 # 检查参数
 if [ $# -eq 0 ]; then

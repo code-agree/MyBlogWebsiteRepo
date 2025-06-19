@@ -26,7 +26,6 @@ jobs:
           
       - name: Build
         run: |
-          cd ./WebsiteRepo
           hugo --minify
           
       - name: Deploy
@@ -36,4 +35,4 @@ jobs:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: code-agree/code-agree.github.io
           publish_branch: main
-          publish_dir: ./WebsiteRepo/public
+          publish_dir: ./public
