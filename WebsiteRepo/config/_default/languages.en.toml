@@ -9,7 +9,7 @@ title = "Yu's Space"
 [params]
   dateFormat = "2 January 2006"
 
-  mainSections = ["Blog", "posts"]
+  mainSections = ["blog", "posts"]
   description = "My awesome website"
 
 [params.author]
