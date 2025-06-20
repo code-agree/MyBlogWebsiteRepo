@@ -86,6 +86,7 @@ Samples: 4K of event 'cpu-clock:pppH', Event count (approx.): 4991991987
 
 
 5. 与relaxed版本的比较分析
+
 将这些数据与relaxed版本对比，我们可以看到几个关键差异：
 
 - **原子操作函数：**
@@ -102,6 +103,7 @@ Samples: 4K of event 'cpu-clock:pppH', Event count (approx.): 4991991987
 
 
 6. 性能差异解释
+
 基于这些数据，我们可以解释seq_cst和relaxed版本之间0.63%的性能差异：
 
 - **函数调用路径不同：**
