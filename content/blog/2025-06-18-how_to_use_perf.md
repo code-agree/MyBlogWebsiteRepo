@@ -36,7 +36,7 @@ draft = false
 
 ```bash
 # 建立基准性能数据
-perf stat -e cycles,instructions,cache-references,cache-misses,branches,branch-misses -a -g ./strategyTrade
+perf stat -e cycles,instructions,cache-references,cache-misses,branches,branch-misses -o perf_base.data -a -g ./strategyTrade
 ```
 
 **命令参数解释**:
@@ -46,6 +46,7 @@ perf stat -e cycles,instructions,cache-references,cache-misses,branches,branch-m
 - `cache-misses`: 缓存未命中次数，高缓存未命中率会导致处理器等待内存，增加延迟
 - `branches`: 分支指令执行次数，反映程序中条件判断和跳转的频率
 - `branch-misses`: 分支预测失败次数，高失败率会导致流水线刷新，降低CPU效率
+- `-o`: 指定输出文件名
 - `-a`: 收集所有CPU核心的数据，全系统视图
 - `-g`: 收集调用图信息，便于分析函数调用关系
 
