@@ -315,7 +315,7 @@ Ring Buffer 的核心特征：
 
 - 所有操作不涉及动态内存分配；
 
-- 利用了数组“环绕”特性：写满从头开始，读完从头开始。
+- 利用了数组"环绕"特性：写满从头开始，读完从头开始。
 
 为什么用 ring buffer 做 SPSC queue？
 因为：
@@ -642,7 +642,7 @@ auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start)
 
 ### 核心要点
 1. **硬件基础**：理解CPU缓存和指令重排序的影响差异
-2. **内存序**：掌握acquire-release模型
+2. **内存序**：掌握acquire-release模型，详见[内存序与无锁队列]({{< ref "memory_order" >}})
 3. **设计权衡**：复杂度vs性能vs适用性
 4. **实际应用**：根据场景选择合适的实现
 
@@ -651,13 +651,13 @@ auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start)
 - **最小化同步**：使用最弱的内存序满足需求
 - **渐进优化**：先保证正确性，再优化性能
 
-### refs:
-https://www.bluepuni.com/archives/cpp-memory-model/
-https://www.1024cores.net/home/lock-free-algorithms/queues
-https://github.com/cameron314/concurrentqueue
-https://rigtorp.se/ringbuffer/
-https://www.codeproject.com/articles/43510/lock-free-single-producer-single-consumer-circular
-https://github.com/facebook/folly/blob/main/folly/concurrency/UnboundedQueue.h
-https://preshing.com/20120612/an-introduction-to-lock-free-programming/
-https://github.com/cpp-taskflow/cpp-taskflow/wiki/Concurrent-UM-Queues
-http://blog.molecular-matters.com/2011/07/07/lock-free-single-producer-single-consumer-queue/
+### 参考文献:
+- [C++ Memory Model](https://www.bluepuni.com/archives/cpp-memory-model/)
+- [Lock-free Algorithms: Queues](https://www.1024cores.net/home/lock-free-algorithms/queues)
+- [moodycamel::ConcurrentQueue](https://github.com/cameron314/concurrentqueue)
+- [Fast Single-Producer Single-Consumer Ring Buffer](https://rigtorp.se/ringbuffer/)
+- [Lock-Free Single-Producer Single-Consumer Circular Queue](https://www.codeproject.com/articles/43510/lock-free-single-producer-single-consumer-circular)
+- [Folly UnboundedQueue](https://github.com/facebook/folly/blob/main/folly/concurrency/UnboundedQueue.h)
+- [An Introduction to Lock-Free Programming](https://preshing.com/20120612/an-introduction-to-lock-free-programming/)
+- [Concurrent UM Queues](https://github.com/cpp-taskflow/cpp-taskflow/wiki/Concurrent-UM-Queues)
+- [Lock-Free Single-Producer Single-Consumer Queue](http://blog.molecular-matters.com/2011/07/07/lock-free-single-producer-single-consumer-queue/)

@@ -61,6 +61,42 @@ git push origin main
 3. 构建网站
 4. 部署到`code-agree/code-agree.github.io`仓库
 
+## 在文章中引用其他文章
+
+在博客文章中，你可以使用Hugo的内置shortcode `ref` 或 `relref` 来引用其他文章。这比直接使用Markdown链接更可靠，因为即使文章路径或URL结构发生变化，链接也不会失效。
+
+### 基本用法
+
+```markdown
+<!-- 基本引用，生成指向目标文章的链接 -->
+{{< ref "文章路径" >}}
+
+<!-- 带文本的链接 -->
+[链接文本]({{< ref "文章路径" >}})
+
+<!-- 例如引用memory_order文章 -->
+[查看内存序详情]({{< ref "memory_order" >}})
+```
+
+### 高级用法
+
+```markdown
+<!-- 跨语言引用 -->
+{{< ref path="文章路径" lang="zh" >}}
+
+<!-- 引用特定标题 -->
+{{< ref "文章路径#标题ID" >}}
+
+<!-- 引用其他部分的内容 -->
+{{< ref "blog/other-post" >}}
+```
+
+### 路径说明
+
+- 如果引用同一目录下的文章，直接使用文件名（不含扩展名）
+- 如果引用其他目录的文章，使用相对路径，如 `blog/article-name`
+- 不需要包含文件扩展名（.md）
+
 ## 注意事项
 
 - 确保YAML文件（如`.github/workflows/gh-pages.yml`）格式正确，不包含多余空格
