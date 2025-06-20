@@ -146,7 +146,7 @@ Samples: 4K of event 'cpu-clock:pppH', Event count (approx.): 4991991987
 ### 2.4 O0优化下的汇编差异分析
 
 以下为 gcc 15.1，O0 优化下的关键汇编片段：
-（汇编生成工具：https://godbolt.org/）
+[Godbolt 在线汇编工具](https://godbolt.org/)
 
 ```assembly
 worker_relaxed_load():
