@@ -15,7 +15,7 @@ title = "Yu's Space"
 [params.author]
   name = "Wenjun Yu"
   image = "img/author.jpg"
-  headline = "I'm Wenjun Yu. Currently learning to walk in LLM without falling on my bottom. Open to collaborating on interesting and innovative projects. Currently working on quant trading :cat:"
+  headline = "I'm Wenjun Yu. Currently learning to walk in LLM without falling on my bottom. Open to collaborating on interesting and innovative projects. Currently working on HFT :cat:"
   bio = "A little bit about you"
   links = [
     { github = "https://github.com/code-agree" },
