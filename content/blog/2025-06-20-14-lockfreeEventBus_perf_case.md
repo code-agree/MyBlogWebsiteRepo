@@ -542,7 +542,12 @@ void publish(std::shared_ptr<Event>&& event) {
 
 #### 3.5.1 什么是False Sharing
 
-缓存行伪共享（False Sharing）是多核处理器系统中的一个重要性能问题。当多个CPU核心访问位于同一缓存行（Cache Line）中的不同数据时，即使这些数据在逻辑上是独立的，也会导致缓存行在核心间频繁传输，严重影响性能。
+False Sharing 是一种缓存一致性冲突现象，发生在：
+
+> 多个线程运行在不同物理核心上，并发写入位于同一 cache line 上但彼此独立的变量。
+> 尽管变量逻辑上没有共享，但由于它们共占一个 cache line，会导致 cache line 的所有权在核心之间频繁来回转移，从而引发 cache invalidation、总线通信增加、延迟升高，严重时导致程序性能显著下降。
+
+False Sharing 本质上是 硬件缓存一致性协议（如 MESI）导致的性能副作用，而不是软件 bug，因此它尤其容易被初学者忽视。
 
 > **相关知识**：关于CPU缓存架构和缓存一致性协议的详细解释，请参考[深入理解无锁队列]({{< ref "lock_free_queue#hardware-basics" >}})中的"硬件基础"章节。
 
