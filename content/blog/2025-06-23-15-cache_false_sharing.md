@@ -205,13 +205,13 @@ CPU2: 发现Invalid → 请求数据 → 等待锁定释放 → 获取 → 锁�
 ### 4. CPU指令层面的差异
 
 #### 普通变量的写入
-```assembly
+```cpp
 # 普通变量写入 (*target = i)
 mov %eax, (%rdi)    # 一条简单的内存写入指令
 ```
 
 #### 原子变量写入
-```assembly
+```cpp
 # 原子变量写入 (atomic.store(i, relaxed))
 lock mov %eax, (%rdi)    # LOCK前缀确保原子性
 # 或者使用更复杂的指令序列
