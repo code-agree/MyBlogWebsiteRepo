@@ -75,7 +75,7 @@ git push origin main
 [链接文本]({{< ref "文章路径" >}})
 
 <!-- 例如引用memory_order文章 -->
-[查看内存序详情]({{< ref "memory_order" >}})
+[查看内存序详情]({{< ref "2025-06-24-memory_ordering_in_cpp" >}})
 ```
 
 ### 高级用法

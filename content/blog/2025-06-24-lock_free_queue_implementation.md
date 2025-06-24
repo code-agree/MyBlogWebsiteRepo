@@ -642,7 +642,7 @@ auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start)
 
 ### 核心要点
 1. **硬件基础**：理解CPU缓存和指令重排序的影响差异
-2. **内存序**：掌握acquire-release模型，详见[内存序与无锁队列]({{< ref "memory_order" >}})
+2. **内存序**：掌握acquire-release模型，详见[内存序与无锁队列]({{< ref "2025-06-24-memory_ordering_in_cpp" >}})
 3. **设计权衡**：复杂度vs性能vs适用性
 4. **实际应用**：根据场景选择合适的实现
 

@@ -321,10 +321,10 @@ False Sharing 是现代多核编程中最隐蔽但杀伤力极大的性能陷阱
 
 ## 参考资料与相关阅读
 
-- [LockFree事件总线性能优化案例]({{< ref "2025-06-20-14-lockfreeEventBus_perf_case" >}})：详细分析了False Sharing在事件总线中的影响及优化方法
+- [LockFree事件总线性能优化案例]({{< ref "2025-06-20-lockfree_eventbus_performance_analysis" >}})：详细分析了False Sharing在事件总线中的影响及优化方法
 - [高性能本地内存订单管理设计]({{< ref "2025-06-19-how_to_design_order_inlocalmemory" >}})：讨论了订单管理系统中如何避免False Sharing问题
-- [共享内存多进程通信优化]({{< ref "fix_share_page_position" >}})：探讨了在共享内存场景中使用缓存行对齐避免False Sharing
-- [模板类实现中的缓存优化]({{< ref "template_class" >}})：展示了在模板类设计中如何考虑缓存行对齐
+- [共享内存多进程通信优化]({{< ref "2025-06-24-fix_shared_page_position" >}})：探讨了在共享内存场景中使用缓存行对齐避免False Sharing
+- [模板类实现中的缓存优化]({{< ref "2025-06-24-cpp_template_class_guide" >}})：展示了在模板类设计中如何考虑缓存行对齐
 
 ---
 

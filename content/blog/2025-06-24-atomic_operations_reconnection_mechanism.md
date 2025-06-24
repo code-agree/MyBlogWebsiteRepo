@@ -129,7 +129,7 @@ bool compare_exchange_strong(T& expected, T desired, std::memory_order order = s
 - `expected`：一个引用，表示预期的旧值。如果当前值与 `expected` 相等，则将其更新为 `desired`，否则将当前值写入 `expected`。
 - `desired`：要设置的新值。
 - `order`：内存序（memory order），控制内存操作的顺序。常用的有 `std::memory_order_acquire`、`std::memory_order_release` 和 `std::memory_order_acq_rel`。
-[查看更多内存序相关内容]({{< ref "memory_order" >}})
+[查看更多内存序相关内容]({{< ref "2025-06-24-memory_ordering_in_cpp" >}})
 ### 返回值
 
 - 如果当前值与 `expected` 相等，则返回 `true`，并将当前值更新为 `desired`。
