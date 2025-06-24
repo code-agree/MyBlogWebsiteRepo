@@ -12,7 +12,7 @@ case "$1" in
     fi
     
     # Generate filename with current date and time (hour level)
-    DATE_PREFIX=$(date +"%Y-%m-%d-%H")
+    DATE_PREFIX=$(date +"%Y-%m-%d")
     FILENAME="${DATE_PREFIX}-$2.md"
     
     # Create the article in the correct directory (blog, lowercase)
