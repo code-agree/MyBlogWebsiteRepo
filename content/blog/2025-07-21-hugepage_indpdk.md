@@ -320,23 +320,6 @@ Hugepage 0 (物理地址0x80000000-0x80200000):
 - 提高内存带宽利用率
 - 降低延迟抖动
 
-### 4.4 无锁数据结构的优化
-
-**Ring Buffer队列优化：**
-```cpp
-// Hugepage使得ring buffer操作更高效
-struct rte_ring {
-    uint32_t prod_head;    // 生产者头指针
-    uint32_t prod_tail;    // 生产者尾指针
-    uint32_t cons_head;    // 消费者头指针  
-    uint32_t cons_tail;    // 消费者尾指针
-    void* ring[];          // 实际的ring数组
-};
-
-// 在hugepage内，ring数组的物理地址连续
-// 原子操作和缓存行为更可预测
-```
-
 ## 5. TLB优化：从根本上解决地址转换瓶颈
 
 ### 5.1 DPDK工作集的TLB压力分析
