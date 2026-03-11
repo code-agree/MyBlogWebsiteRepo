@@ -2,6 +2,7 @@
 title = 'C++中inline函数为何比普通函数调用更快：深入解析'
 date = 2025-06-24T16:16:15+08:00
 draft = false
+tags = ["C++", "Performance"]
 +++
 
 ## 目录

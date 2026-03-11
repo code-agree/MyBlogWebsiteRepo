@@ -2,6 +2,7 @@
 title = '深入理解Socket类型：从原理到HFT应用的技术分析'
 date = 2025-08-08T01:10:05+08:00
 draft = false
+tags = ["Network", "HFT"]
 +++
 
 ## 引言

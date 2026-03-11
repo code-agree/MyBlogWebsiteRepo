@@ -2,7 +2,7 @@
 title = 'Fork机制详解：从基础到高级应用'
 date = 2024-10-15T02:45:13+08:00
 draft = false
-tags = "System Programming"
+tags = ["Linux"]
 +++
 ## 1. 引言
 

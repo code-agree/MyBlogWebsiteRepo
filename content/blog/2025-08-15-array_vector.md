@@ -2,6 +2,7 @@
 title = '2025 08 15 Array_vector'
 date = 2025-08-15T17:05:52+08:00
 draft = true
+tags = ["C++", "Memory", "HFT"]
 +++
 # 深入理解 std::array 内存机制：从栈内存到高频交易优化
 

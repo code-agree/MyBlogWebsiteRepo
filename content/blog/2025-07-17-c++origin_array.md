@@ -2,6 +2,7 @@
 title = 'C++数组类型的底层原理分析'
 date = 2025-07-17T03:21:09+08:00
 draft = false
+tags = ["C++"]
 +++
 
 ## `std::array` 与 `int a[10]` 的区别与优点

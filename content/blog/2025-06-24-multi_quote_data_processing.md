@@ -2,7 +2,7 @@
 title = '高频交易场景下的多WS连接低延时方案设计'
 date = 2024-12-03T01:01:26+08:00
 draft = false
-tags = ["HFT System Design"]
+tags = ["HFT", "Network"]
 +++
 
 ## 1. 业务背景与挑战

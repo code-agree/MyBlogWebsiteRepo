@@ -2,6 +2,7 @@
 title = '高性能网络编程：io_uring 与内存优化技术详解'
 date = 2024-12-06T06:04:25+08:00
 draft = false
+tags = ["Network", "Memory"]
 +++
 ## 0. 内存管理优化
 

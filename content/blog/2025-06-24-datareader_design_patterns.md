@@ -2,7 +2,7 @@
 title = '高频交易系统优化：从数据读取到系统平衡的思考过程'
 date = 2024-09-25T01:04:59+08:00
 draft = false
-tags = ["HFT System Design", "性能优化"]
+tags = ["HFT", "Performance"]
 +++
 ## 1. 初始问题：数据读取效率
 

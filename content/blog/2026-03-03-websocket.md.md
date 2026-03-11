@@ -2,6 +2,7 @@
 title = '高频交易中的 WebSocket 架构设计：从阻塞 IO 到事件驱动'
 date = 2026-03-03T23:38:37+08:00
 draft = false
+tags = ["Network", "HFT"]
 +++
 
 > 本文以一个真实的 OKX Fill Receiver 实现为切入点，深入探讨 HFT 场景下 WebSocket 客户端的架构设计，涵盖 Socket 编程基础、epoll 事件驱动模型、Connection/Socket/Thread 的关系，以及面向超低延迟的工程优化。

@@ -2,6 +2,7 @@
 title = 'WebSocket消息处理线程CPU亲和性导致的消息阻塞故障分析'
 date = 2024-12-13T05:15:51+08:00
 draft = false
+tags = ["HFT", "Network", "Performance"]
 +++
 
 ## 一、故障现象

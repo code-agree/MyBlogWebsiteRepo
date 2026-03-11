@@ -2,6 +2,7 @@
 title = 'Linux Coredump 调试完整指南'
 date = 2026-01-15T10:05:34+08:00
 draft = false
+tags = ["Debug", "Linux"]
 +++
 
 ## 目录

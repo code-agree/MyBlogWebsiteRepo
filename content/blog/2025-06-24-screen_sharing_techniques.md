@@ -1,8 +1,8 @@
 +++
 title = '使用 Tailscale 实现 MacOS 设备远程连接教程'
 date = 2025-01-19T11:15:08+08:00
-tag = ["MacOs"]
 draft = false
+tags = ["Tooling"]
 +++
 我来帮你编写一份详细的技术教程，介绍如何使用 Tailscale 在 MacOS 设备间实现远程连接。
 

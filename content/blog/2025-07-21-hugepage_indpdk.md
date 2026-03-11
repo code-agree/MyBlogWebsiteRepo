@@ -2,6 +2,7 @@
 title = 'DPDK为什么必须使用Hugepage：从内存管理本质到架构必需'
 date = 2025-07-21T03:54:37+08:00
 draft = false
+tags = ["Memory", "Network"]
 +++
 
 ## 引言

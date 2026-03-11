@@ -2,6 +2,7 @@
 title = 'WebSocket消息接收机制技术文档'
 date = 2024-12-06T21:58:28+08:00
 draft = true
+tags = ["Network", "HFT"]
 +++
 
 ## 1. 概述
