@@ -2,7 +2,7 @@
 title = '内存序'
 date = 2025-06-11T02:15:43+08:00
 draft = false
-
+tags = ["Concurrency", "C++"]
 +++
 
 # C++内存序与无锁编程

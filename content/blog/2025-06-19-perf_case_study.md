@@ -2,6 +2,7 @@
 title = '2025 06 19 Perf_Case'
 date = 2025-06-19T04:35:36+08:00
 draft = true
+tags = ["Performance", "HFT"]
 +++
 
 1. 使用perf 检查出CPU热点，进行优化。

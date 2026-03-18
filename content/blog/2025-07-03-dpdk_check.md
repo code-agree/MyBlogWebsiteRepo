@@ -2,6 +2,7 @@
 title = 'DPDK性能验证技术分享'
 date = 2025-07-03T04:46:05+08:00
 draft = false
+tags = ["Network", "Performance"]
 +++
 
 ## 目录

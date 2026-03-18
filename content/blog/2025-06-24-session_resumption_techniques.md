@@ -2,7 +2,7 @@
 title = 'TLS会话恢复（Session Resumption）'
 date = 2025-03-07T19:24:12+08:00
 draft = false
-tags = ["Http"]
+tags = ["Network"]
 +++
 
 ---

@@ -2,6 +2,7 @@
 title = '段错误(SEGV)故障定位排查文档'
 date = 2026-01-15T10:18:16+08:00
 draft = false
+tags = ["Debug", "Linux"]
 +++
 
 ## 📋 问题概述

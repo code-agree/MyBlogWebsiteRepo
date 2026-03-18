@@ -2,6 +2,7 @@
 title = '2025 06 24 15 Process_and'
 date = 2025-06-24T15:43:41+08:00
 draft = true
+tags = ["Linux"]
 +++
 ### 进程
 

@@ -2,6 +2,7 @@
 title = '2025 06 23 02 Cpu_data'
 date = 2025-06-23T02:05:31+08:00
 draft = true
+tags = ["Performance", "C++"]
 +++
 
 

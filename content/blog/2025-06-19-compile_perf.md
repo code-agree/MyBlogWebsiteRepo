@@ -2,6 +2,7 @@
 title = '编译器优化级别技术解析'
 date = 2025-06-19T04:00:00+08:00
 draft = false
+tags = ["Performance", "C++"]
 +++
 
 ## 1. 优化级别的本质与编译过程

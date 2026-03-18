@@ -2,7 +2,7 @@
 title = '实现高性能低延迟的交易系统设计'
 date = 2024-09-20T22:32:08+08:00
 draft = false
-tags = ["HFT System Design"]
+tags = ["HFT", "Performance"]
 +++
 # 高性能低延迟交易系统设计：技术分享 update
 

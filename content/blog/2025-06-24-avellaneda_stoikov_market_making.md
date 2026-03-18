@@ -2,6 +2,7 @@
 title = 'MmAvellaneda Stoikov'
 date = 2025-05-19T13:38:50+08:00
 draft = false
+tags = ["HFT"]
 +++
 
 

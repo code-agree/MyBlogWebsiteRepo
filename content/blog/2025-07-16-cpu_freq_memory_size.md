@@ -2,6 +2,7 @@
 title = 'HFT系统硬件优化策略：CPU、内存与网络架构深度解析'
 date = 2025-07-16T18:28:24+08:00
 draft = true
+tags = ["HFT", "Performance"]
 +++
 
 

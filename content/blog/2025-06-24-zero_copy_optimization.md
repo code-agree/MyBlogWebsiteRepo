@@ -2,7 +2,7 @@
 title = '内存映射（mmap）与零拷贝技术：深入理解和实践'
 date = 2024-10-22T01:23:46+08:00
 draft = false
-tags = ["HFT System Design", "Memeoy"]
+tags = ["Memory", "HFT"]
 +++
 ## 1. 概述
 

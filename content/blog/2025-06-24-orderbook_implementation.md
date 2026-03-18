@@ -2,6 +2,7 @@
 title = 'OrderBook 本地维护方案设计'
 date = 2024-11-27T02:35:19+08:00
 draft = false
+tags = ["HFT", "C++"]
 +++
 
 

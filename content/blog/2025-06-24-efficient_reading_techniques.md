@@ -2,6 +2,7 @@
 title = '高频交易系统中的市场数据存储优化'
 date = 2024-09-29T01:36:04+08:00
 draft = false
+tags = ["HFT", "Performance"]
 +++
 
 ## 1. 背景介绍

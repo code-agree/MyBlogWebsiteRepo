@@ -2,7 +2,7 @@
 title = 'Lock Free Queue Application'
 date = 2024-09-02T02:10:33+08:00
 draft = false
-tags = ["HFT System Design"]
+tags = ["Concurrency", "HFT"]
 +++
 
 

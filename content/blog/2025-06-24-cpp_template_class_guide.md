@@ -2,6 +2,7 @@
 title = 'c++ 模版'
 date = 2025-06-10T22:48:21+08:00
 draft = false
+tags = ["C++"]
 +++
 
 

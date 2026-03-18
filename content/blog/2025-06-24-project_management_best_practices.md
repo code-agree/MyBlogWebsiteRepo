@@ -2,7 +2,7 @@
 title = 'GitHub私有仓库协同开发指南'
 date = 2024-10-16T02:04:51+08:00
 draft = false
-tags = ["project management"]
+tags = ["Tooling"]
 +++
 ## 目录
 1. [简介](#简介)
