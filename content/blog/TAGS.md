@@ -117,6 +117,9 @@
 | 2026-03-03-websocket.md.md | `["Network", "HFT"]` |
 | 2026-03-04-try_catch.md | `["C++", "HFT"]` |
 | 2026-03-11-agent-setup.md | `["Tooling"]` |
+| 2026-03-17-net_proc.md | `["Network", "Linux", "HFT"]` |
+| 2026-03-30-cpu_bindcore.md | `["Linux", "Performance", "Network"]` |
+| 2026-04-09-buffer.md | `["Network", "HFT", "Performance"]` |
 
 ## 五、后续维护
 
