@@ -216,15 +216,17 @@ void consumer() {
 
 ### 3.3 内存序的性能影响
 
-不同内存序的性能开销（典型x86-64架构）：
+不同内存序的性能开销（x86-64架构）：
 
 ```cpp
-// 性能从高到低：
-memory_order_relaxed    // ~1 cycle
-memory_order_acquire    // ~1-2 cycles  
-memory_order_release    // ~1-2 cycles
-memory_order_acq_rel    // ~2-3 cycles
-memory_order_seq_cst    // ~10-20 cycles（需要内存屏障）
+// x86-64上，load/store操作：
+memory_order_relaxed    // ~1 cycle（编译为普通 mov）
+memory_order_acquire    // ~1 cycle（load编译为普通 mov，x86 load自带acquire语义）
+memory_order_release    // ~1 cycle（store编译为普通 mov，x86 store自带release语义）
+memory_order_acq_rel    // ~1 cycle（RMW操作本身已含完整屏障语义）
+memory_order_seq_cst    // load ~1 cycle；store ~10-20 cycles（需要 MFENCE 或 XCHG 指令）
+// 注意：性能差异主要体现在 store 操作上，seq_cst store 需要额外的内存屏障。
+// 在ARM/PowerPC等弱内存序架构上，acquire/release也会产生额外屏障开销。
 ```
 
 **关键原则**：**使用能满足需求的最弱内存序**。
@@ -500,8 +502,9 @@ public:
     Node* allocate() {
         Node* node = free_list.load(std::memory_order_acquire);
         while (node && !free_list.compare_exchange_weak(
-                node, node->next, std::memory_order_release)) {
-            // 重试
+                node, node->next, std::memory_order_acq_rel)) {
+            // CAS失败时会重新加载free_list到node，需要acquire语义
+            // 以确保能正确读取node->next（依赖其他线程的release发布）
         }
         return node ? node : new Node;
     }
@@ -509,8 +512,9 @@ public:
     void deallocate(Node* node) {
         node->next = free_list.load(std::memory_order_relaxed);
         while (!free_list.compare_exchange_weak(
-                node->next, node, std::memory_order_release)) {
-            // 重试
+                node->next, node, std::memory_order_acq_rel)) {
+            // CAS失败时会重新加载free_list到node->next，需要acquire语义
+            // 以确保能正确读取其他线程release发布的链表结构
         }
     }
 };

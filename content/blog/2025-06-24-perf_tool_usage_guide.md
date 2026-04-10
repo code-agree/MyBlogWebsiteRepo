@@ -165,7 +165,7 @@ auto error = parser.parse(json.data(), json.size()).get(doc);
 
 2. **内存分配减少**：
    - 避免了 `std::string` 和 `padded_string` 的临时对象创建
-   - 在高频交易系统中，这不仅减少了 CPU 开销，还减轻了 GC 压力
+   - 在高频交易系统中，这不仅减少了 CPU 开销，还减少了内存分配/释放的开销
 
 3. **SIMD 加速**：
    - SIMD 优化的字符串复制可以比 `strncpy` 快 4-8 倍

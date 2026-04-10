@@ -94,7 +94,7 @@ struct alignas(64) Order {
     std::atomic<OrderStatus> status;
     double price;
     double quantity;
-    std::atomic<double> filled;
+    std::atomic<double> filled;  // 注意: C++20 前 atomic<double> 不保证 lock-free 且不支持原子算术操作，HFT 场景建议改用定点整数（如 int64_t 表示 filled * 10^8）以确保 lock-free
     uint64_t create_time;
     // cold fields:
     double avg_fill_price;
@@ -348,7 +348,7 @@ Order* get_order(uint32_t order_id) {
 |------|-----------|-----------|----------|-----------|----------|---------|
 | `std::unordered_map` | O(1) 均值 | O(1)-O(N) | 堆内存 | 差 | 差 | ❌ |
 | `tbb::concurrent_unordered_map` | O(1) 均值 | O(1)-O(N) | 堆内存 | 一般 | 中 | ⚠️ |
-| `std::array` + 整数 ID | O(1) | O(1) | 栈或静态内存 | 最好 | 最优 | ✅✅✅ |
+| `std::array` + 整数 ID | O(1) | O(1) | 静态内存或堆内存（数组过大不适合放在栈上） | 最好 | 最优 | ✅✅✅ |
 
 ## 九、结语：高频系统的设计哲学
 

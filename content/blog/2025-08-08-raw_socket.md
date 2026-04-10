@@ -251,7 +251,7 @@ recvfrom(udp_socket, dns_response, sizeof(dns_response), 0, NULL, NULL);
 ```
 TCP包特点: 大小由内核TCP算法决定
 可能的包组合:
-├── 1个1028字节包 (1000数据 + 20IP + 8TCP)
+├── 1个1040字节包 (1000数据 + 20IP + 20TCP)
 ├── 2个包: 600字节 + 428字节
 ├── 多个包: 由MSS、拥塞窗口等因素决定
 └── 包大小不可预测，由内核优化

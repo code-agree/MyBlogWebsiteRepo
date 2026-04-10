@@ -165,9 +165,7 @@ private:
     
     std::array<Element, Capacity> buffer;
     alignas(64) std::atomic<size_t> tail{0};  // 生产者索引
-    
-    // 每个消费者需要自己的head指针
-    static thread_local size_t consumer_head;
+    alignas(64) std::atomic<size_t> head{0};  // 消费者共享索引（通过CAS竞争）
     
 public:
     SPMCQueue() {
@@ -200,31 +198,37 @@ public:
     }
     
     std::optional<T> pop() {
-        Element& element = buffer[consumer_head % Capacity];
+        size_t pos = head.load(std::memory_order_relaxed);
         
-        // 检查数据是否就绪
-        const size_t expected_seq = consumer_head + 1;
-        if (element.sequence.load(std::memory_order_acquire) != expected_seq) {
-            return std::nullopt; // 数据未就绪
+        while (true) {
+            Element& element = buffer[pos % Capacity];
+            
+            // 检查数据是否就绪
+            const size_t expected_seq = pos + 1;
+            if (element.sequence.load(std::memory_order_acquire) != expected_seq) {
+                return std::nullopt; // 数据未就绪
+            }
+            
+            // 通过CAS竞争消费权：多个消费者同时尝试推进head，
+            // 只有一个能成功获得pos位置的消费权
+            if (head.compare_exchange_weak(pos, pos + 1,
+                    std::memory_order_relaxed, std::memory_order_relaxed)) {
+                // CAS成功，当前线程独占消费pos位置
+                T* data_ptr = element.data.load(std::memory_order_relaxed);
+                T result = std::move(*data_ptr);
+                delete data_ptr;
+                
+                element.data.store(nullptr, std::memory_order_relaxed);
+                
+                // 更新序列号，通知生产者位置可用
+                element.sequence.store(pos + Capacity, std::memory_order_release);
+                
+                return result;
+            }
+            // CAS失败，pos已被更新为当前head值，重新尝试
         }
-        
-        // 获取数据
-        T* data_ptr = element.data.load(std::memory_order_relaxed);
-        T result = std::move(*data_ptr);
-        delete data_ptr;
-        
-        element.data.store(nullptr, std::memory_order_relaxed);
-        
-        // 更新序列号，通知生产者位置可用
-        element.sequence.store(consumer_head + Capacity, std::memory_order_release);
-        
-        ++consumer_head;
-        return result;
     }
 };
-
-template<typename T, size_t Capacity>
-thread_local size_t SPMCQueue<T, Capacity>::consumer_head = 0;
 
 // ============================================================================
 // 4. 多生产者单消费者队列 (MPSC) - 使用CAS

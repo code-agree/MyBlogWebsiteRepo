@@ -445,8 +445,9 @@ mov     eax, DWORD PTR [rax]      ; 执行加载操作
 **-O3**会优化为：
 ```assembly
 mov     eax, DWORD PTR [running]  ; 直接加载，无额外屏障
-; 可能将值缓存在寄存器中一段时间
 ```
+
+注意：尽管使用了`memory_order_relaxed`，编译器**不能**将原子加载的结果缓存在寄存器中从而跳过后续的原子加载。C++标准要求每次对原子变量调用`load()`都必须从缓存一致性域（cache coherency domain）中读取值，以确保能观察到其他线程的写入。这一点与普通变量有本质区别——普通变量在没有`volatile`的情况下可以被编译器缓存到寄存器中。
 
 并且在循环中：
 ```cpp
@@ -455,21 +456,18 @@ while (running.load(std::memory_order_relaxed)) {
 }
 ```
 
-**-O3**可能进一步优化为：
+**-O3**生成的代码仍然会在每次迭代中执行原子加载：
 ```assembly
-mov     eax, DWORD PTR [running]  ; 循环外加载一次
-test    eax, eax
-je      .exit_loop
 .loop_start:
-    ; 循环体指令
-    ; 定期重新检查running值
-    mov     eax, DWORD PTR [running]
+    mov     eax, DWORD PTR [running]  ; 每次迭代都必须从内存加载
     test    eax, eax
-    jne     .loop_start
+    je      .exit_loop
+    ; 循环体指令
+    jmp     .loop_start
 .exit_loop:
 ```
 
-这种优化减少了原子操作频率，显著提高了循环性能。
+编译器**不能**将原子加载提升到循环外部，也不能减少加载次数。`relaxed`语义放松的是与其他内存操作之间的排序约束（不生成额外的内存屏障指令如`mfence`），而非加载本身的可见性保证。在x86架构上，relaxed load和普通load生成相同的`mov`指令，但编译器对两者的优化自由度截然不同：普通变量的load可以被提升、合并或消除，而原子变量的load不可以。
 
 ## 8. 结论：优化级别的本质
 

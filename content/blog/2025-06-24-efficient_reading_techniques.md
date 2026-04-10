@@ -34,7 +34,7 @@ std::optional<MappedTickerData> MarketDataStore::readLatestData(const std::strin
 ```
 
 这个实现存在几个性能瓶颈：
-1. 使用共享锁可能导致并发读取的性能下降。
+1. 共享锁虽然允许并发读取，但在极高频率调用下其原子操作的开销仍不可忽视。
 2. 字符串比较效率低下，特别是创建临时 `std::string` 对象。
 3. 没有利用现代 CPU 的 SIMD 指令集。
 

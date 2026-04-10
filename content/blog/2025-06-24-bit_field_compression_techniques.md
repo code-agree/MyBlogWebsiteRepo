@@ -30,7 +30,7 @@ unsigned int b = 3;  // 0011
 unsigned int and_result = a & b;  // 0001 (1)
 unsigned int or_result = a | b;   // 0111 (7)
 unsigned int xor_result = a ^ b;  // 0110 (6)
-unsigned int not_result = ~a;     // 11111111111111111111111111111010 (-6 in 2's complement)
+unsigned int not_result = ~a;     // 11111111111111111111111111111010 (4294967290)
 unsigned int left_shift = a << 1; // 1010 (10)
 unsigned int right_shift = a >> 1;// 0010 (2)
 
@@ -129,7 +129,7 @@ int set_Direction(int& value, int new_direction) {
 
 // 对于非最低位的多位字段（如 Offset）
 int set_Offset(int& value, int new_offset) {
-    if (new_offset < 3 && new_offset > 0) {
+    if (new_offset <= 3) {
         value = (value & ~(OFFSET_BITS_MASK << OFFSET_BITS_OFFSET)) | (new_offset << OFFSET_BITS_OFFSET);
         return 0;
     }
@@ -164,7 +164,7 @@ int set_Field(int& value, int new_field_value, int mask, int offset) {
 ```cpp
 #define ORDER_TYPE_MASK     0x03
 #define SIDE_MASK           0x04
-#define QUANTITY_MASK       0xFFFFF8
+#define QUANTITY_MASK       0x000FFFF8
 #define PRICE_MASK          0xFFF00000
 
 #define ORDER_TYPE_OFFSET   0

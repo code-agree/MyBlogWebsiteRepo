@@ -178,7 +178,7 @@ perf record -g ./your_program
 perf可以采样多种事件类型，`cpu-clock:pppH`是其中一种。
 
 **常见事件类型**:
-- `cpu-clock`: CPU时钟周期，最常用的性能计数器
+- `cpu-clock`: 基于高精度定时器（hrtimer）的软件事件，用于测量CPU时间（纳秒级），常用于没有硬件PMU支持时的性能分析
 - `cycles`: CPU周期数
 - `instructions`: 指令执行数
 - `cache-misses`: 缓存未命中次数

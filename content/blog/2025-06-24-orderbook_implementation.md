@@ -48,9 +48,10 @@ private:
     std::atomic<bool> initialized_{false};
     
     // 价格档位存储
-    using PriceLevelMap = tbb::concurrent_map<double, PriceLevel, std::greater<>>;
-    PriceLevelMap bids_;  // 买盘 - 降序
-    PriceLevelMap asks_;  // 卖盘 - 升序
+    using BidMap = tbb::concurrent_ordered_map<double, PriceLevel, std::greater<>>;
+    using AskMap = tbb::concurrent_ordered_map<double, PriceLevel, std::less<>>;
+    BidMap bids_;  // 买盘 - 降序（最高价优先）
+    AskMap asks_;  // 卖盘 - 升序（最低价优先）
 };
 
 // 价格档位结构

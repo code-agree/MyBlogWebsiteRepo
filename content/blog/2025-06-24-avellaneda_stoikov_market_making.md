@@ -65,7 +65,7 @@ $$
 \quad
 \begin{cases}
 \phi_{\text{ask}}^t = \phi_{\text{max}}^t & \text{if } q_t > 0 \\
-\phi_{\text{ask}}^t = \phi_{\text{max}}^t e^{-\eta q_t} & \text{if } q_t < 0
+\phi_{\text{ask}}^t = \phi_{\text{max}}^t e^{\eta q_t} & \text{if } q_t < 0
 \end{cases}
 $$
 

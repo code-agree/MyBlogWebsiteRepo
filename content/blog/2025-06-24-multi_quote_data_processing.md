@@ -65,7 +65,7 @@ struct ConnectionContext {
 
 1. 内存管理优化
 ```cpp
-// 使用大页内存和内存锁定
+// 使用内存锁定（mlock防止换出到swap）
 void* buffer = mmap(nullptr, BUFFER_SIZE, 
     PROT_READ | PROT_WRITE,
     MAP_PRIVATE | MAP_ANONYMOUS,

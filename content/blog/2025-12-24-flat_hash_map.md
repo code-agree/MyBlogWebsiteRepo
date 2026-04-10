@@ -43,7 +43,7 @@ tags = ["C++", "Performance"]
 1. 按照查找逻辑找到插入位置（叶子节点）
 2. 创建新节点并插入
 3. 如果违反红黑树性质，进行旋转和重新着色
-4. 最多需要 O(log n) 次旋转操作
+4. 最多需要 2 次旋转操作（O(1)），重新着色最多 O(log n) 次
 ```
 
 **时间复杂度**：O(log n)
@@ -73,11 +73,11 @@ tags = ["C++", "Performance"]
 struct Slot {
     Key key;
     Value value;
-    ControlByte ctrl;  // 控制字节：标记槽位状态（空/已用/删除）
 };
 
+ControlByte* ctrl_;    // 控制字节数组（独立存储）：标记槽位状态（空/已用/删除）
 Slot* slots_;          // 连续数组
-size_t capacity_;      // 容量（通常是 2 的幂）
+size_t capacity_;      // 容量（通常是 2^N - 1，即 Group 大小的倍数减一）
 size_t size_;          // 元素数量
 ```
 
@@ -89,7 +89,7 @@ size_t size_;          // 元素数量
 3. 检查 slots_[index]：
    - 如果 ctrl 标记为"已用"且 key == K，返回
    - 如果 ctrl 标记为"空"，未找到
-   - 否则，使用探测序列查找下一个位置（线性探测/二次探测）
+   - 否则，使用探测序列查找下一个位置（二次探测）
 4. 重复步骤 3，直到找到或遇到空槽
 ```
 

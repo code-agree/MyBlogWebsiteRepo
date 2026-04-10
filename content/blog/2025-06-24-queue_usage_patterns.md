@@ -37,6 +37,8 @@ tags = ["HFT"]
 ### 3.1 无锁环形缓冲区（Lock-free Ring Buffer）
 
 ```cpp
+// 注意：此实现仅适用于单生产者单消费者（SPSC）场景，
+// 多生产者或多消费者场景需要使用CAS操作来安全地更新head_/tail_
 template<typename T, size_t Size>
 class LockFreeRingBuffer {
 private:

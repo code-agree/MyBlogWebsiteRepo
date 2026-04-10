@@ -7,4 +7,4 @@ tags = ["Performance", "HFT"]
 
 1. 使用perf 检查出CPU热点，进行优化。
 - 批处理，避免频繁的原子操作
-- while (atomic<bool> running) 与 while (running.load(released))的区别，前者是默认更严格的内存序同步
+- while (atomic<bool> running) 与 while (running.load(std::memory_order_relaxed))的区别，前者是默认更严格的内存序同步

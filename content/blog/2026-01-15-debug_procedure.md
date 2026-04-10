@@ -76,7 +76,7 @@ ulimit -c
 
 **关键点：**
 - `ulimit -c` 是**进程级限制**，由父进程继承给子进程
-- 如果父进程的 `ulimit -c` 为 0，即使子进程设置 `ulimit -c unlimited` 也无法生成 coredump
+- `ulimit -c` 设置的是 **soft limit**（软限制），子进程可以通过 `setrlimit()` 将软限制提高到硬限制（hard limit）的上限。只有当父进程的 **hard limit**（`ulimit -Hc`）为 0 时，子进程才无法提高 core dump 大小限制。如果硬限制非零，子进程即使继承了软限制 0，也可以通过 `setrlimit(RLIMIT_CORE, ...)` 将软限制提高到硬限制允许的范围内
 - 必须在**程序启动前**设置，崩溃后设置无效
 
 ---

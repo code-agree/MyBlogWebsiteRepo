@@ -120,14 +120,10 @@ let subscribe_config = json!({
     "params": [
         {
             "mentions": [target_address.to_string()], // 目标账户
-            "commitment": "confirmed",                // 确认级别
-            "filters": [                             // 可选过滤器
-                {"dataSize": 0},                     // 数据大小过滤
-                {"memcmp": {                         // 内存比较过滤
-                    "offset": 0,
-                    "bytes": "base58_encoded_bytes"
-                }}
-            ]
+            "commitment": "confirmed"                 // 确认级别
+            // 注意: logsSubscribe 仅支持 "mentions" 和 "commitment" 参数。
+            // "dataSize" 和 "memcmp" 过滤器属于 programSubscribe / getProgramAccounts，
+            // 不适用于 logsSubscribe。
         }
     ]
 });
