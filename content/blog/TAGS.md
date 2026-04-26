@@ -120,6 +120,9 @@
 | 2026-03-17-net_proc.md | `["Network", "Linux", "HFT"]` |
 | 2026-03-30-cpu_bindcore.md | `["Linux", "Performance", "Network"]` |
 | 2026-04-09-buffer.md | `["Network", "HFT", "Performance"]` |
+| 2026-04-17-iceoryx_ipc_benchmark.md | `["IPC", "Performance", "SharedMemory", "HFT", "C++", "LockFree"]` |
+| 2026-04-25-kernel_socket_vs_dpdk.md | `["Network", "HFT", "Performance", "Linux"]` |
+| 2026-04-27-timestamp.md | `["HFT", "Performance", "Linux", "Network"]` |
 
 ## 五、后续维护
 
