@@ -123,6 +123,7 @@
 | 2026-04-17-iceoryx_ipc_benchmark.md | `["IPC", "Performance", "SharedMemory", "HFT", "C++", "LockFree"]` |
 | 2026-04-25-kernel_socket_vs_dpdk.md | `["Network", "HFT", "Performance", "Linux"]` |
 | 2026-04-27-timestamp.md | `["HFT", "Performance", "Linux", "Network"]` |
+| 2026-06-26-tcp_send_path.md | `["Network", "Linux", "HFT"]` |
 
 ## 五、后续维护
 
