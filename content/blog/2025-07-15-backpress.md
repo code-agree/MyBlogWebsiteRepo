@@ -2,7 +2,7 @@
 title = '高频交易系统中的背压机制设计讨论'
 date = 2025-07-15T19:36:31+08:00
 draft = false
-tags = ["HFT"]
+tags = ["HFT", "Performance", "Concurrency"]
 +++
 ## 摘要
 
@@ -210,17 +210,12 @@ HFT系统对延迟极度敏感：
 
 ### 5.3 零丢弃缓冲区设计（BBO专用）
 
-**核心原理**：
-- 采用Lock-Free Ring Buffer，避免锁竞争
-- 使用Memory Barrier保证数据一致性
-- 缓冲区大小设置为2的幂，便于位运算优化
-- 支持紧急写入模式，允许覆盖最老未读数据
+**核心原理**：底层采用 SPSC Wait-Free Ring Buffer——单生产者单消费者双游标结构，release/acquire 内存序保证数据一致性，容量取 2 的幂用位运算寻址，缓存行对齐避免 false sharing；在此基础上增加紧急写入模式，允许覆盖最老未读数据以保证写侧永不阻塞。SPSC 环形缓冲的完整实现与内存序/缓存行技巧详见 [SPSC 队列设计](/blog/2026-08-07-spsc_queue_mengrao/)，底层并发原语的硬件成本详见[并发原语剖析](/blog/2026-03-03-mutext/)。
 
 **关键特性**：
 - **写入延迟**：< 50ns (P99)
 - **读取延迟**：< 30ns (P99)
 - **容量**：16K entries，支持1秒的BBO数据积压
-- **内存对齐**：64字节对齐，避免false sharing
 
 ### 5.4 自适应采样缓冲区设计（Trade专用）
 

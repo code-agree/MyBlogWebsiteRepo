@@ -37,13 +37,13 @@
 | 2025-06-11-orderbook.md | `["HFT", "Performance"]` |
 | 2025-06-18-how_to_use_perf.md | `["Performance", "Linux"]` |
 | 2025-06-19-compile_perf.md | `["Performance", "C++"]` |
-| 2025-06-19-how_to_design_order_inlocalmemory.md | `["HFT", "C++", "Performance"]` |
+| 2025-06-19-how_to_design_order_inlocalmemory.md | `["HFT", "C++", "Performance", "Concurrency"]` |
 | 2025-06-19-perf_case_study.md | `["Performance", "HFT"]` |
-| 2025-06-20-lockfree_eventbus_performance_analysis.md | `["Concurrency", "HFT", "Performance"]` |
+| 2025-06-20-lockfree_eventbus_performance_analysis.md | `["Concurrency", "HFT", "Performance", "C++"]` |
 | 2025-06-21-memory_order_performance_analysis.md | `["Concurrency", "C++"]` |
 | 2025-06-23-cache_false_sharing_analysis.md | `["Performance", "Concurrency", "C++"]` |
 | 2025-06-23-cpu_data_structures.md | `["Performance", "C++"]` |
-| 2025-06-24-advanced_queue_usage_patterns.md | `["HFT", "Network"]` |
+| 2025-06-24-advanced_queue_usage_patterns.md | `["HFT", "Network", "Concurrency"]` |
 | 2025-06-24-atomic_operations_reconnection_mechanism.md | `["HFT", "Concurrency"]` |
 | 2025-06-24-avellaneda_stoikov_market_making.md | `["HFT"]` |
 | 2025-06-24-batch_order_processing.md | `["HFT"]` |
@@ -61,9 +61,6 @@
 | 2025-06-24-inline_function_optimization.md | `["C++", "Performance"]` |
 | 2025-06-24-io_uring_basics.md | `["Network", "Memory"]` |
 | 2025-06-24-io_uring_mechanism_details.md | `["Network", "HFT"]` |
-| 2025-06-24-lock_free_queue_implementation.md | `["Concurrency", "C++"]` |
-| 2025-06-24-lockfree_programming_techniques.md | `["Concurrency", "HFT"]` |
-| 2025-06-24-memory_ordering_in_cpp.md | `["Concurrency", "C++"]` |
 | 2025-06-24-message_queue_overstocking_solutions.md | `["HFT", "Network", "Performance"]` |
 | 2025-06-24-multi_quote_data_processing.md | `["HFT", "Network"]` |
 | 2025-06-24-mutex_performance_analysis.md | `["HFT", "Concurrency"]` |
@@ -72,7 +69,6 @@
 | 2025-06-24-perf_tool_usage_guide.md | `["HFT", "Performance"]` |
 | 2025-06-24-process_and_thread_management.md | `["Linux"]` |
 | 2025-06-24-project_management_best_practices.md | `["Tooling"]` |
-| 2025-06-24-queue_usage_patterns.md | `["HFT"]` |
 | 2025-06-24-screen_sharing_techniques.md | `["Tooling"]` |
 | 2025-06-24-session_resumption_techniques.md | `["Network"]` |
 | 2025-06-24-solana_blockchain_analysis.md | `["Blockchain"]` |
@@ -86,7 +82,7 @@
 | 2025-07-05-dpdk_application.md | `["Network", "Memory", "Debug"]` |
 | 2025-07-09-asio.md | `["Network", "C++"]` |
 | 2025-07-09-bio_nio.md | `["Network"]` |
-| 2025-07-15-backpress.md | `["HFT"]` |
+| 2025-07-15-backpress.md | `["HFT", "Performance", "Concurrency"]` |
 | 2025-07-16-cpu_freq_memory_size.md | `["HFT", "Performance"]` |
 | 2025-07-17-c++17_new_feature.md | `["C++"]` |
 | 2025-07-17-c++_basic_usage.md | `["C++"]` |
@@ -124,7 +120,7 @@
 | 2026-04-25-kernel_socket_vs_dpdk.md | `["Network", "HFT", "Performance", "Linux"]` |
 | 2026-04-27-timestamp.md | `["HFT", "Performance", "Linux", "Network"]` |
 | 2026-06-26-tcp_send_path.md | `["Network", "Linux", "HFT"]` |
-| 2026-08-07-spsc_queue_mengrao.md | `["Concurrency", "HFT", "C++"]` |
+| 2026-08-07-spsc_queue_mengrao.md | `["Concurrency", "HFT", "C++", "LockFree"]` |
 
 ## 五、后续维护
 
