@@ -108,15 +108,15 @@ draft = true
 | 2025-11-08-default.md | `["C++", "Concurrency", "HFT"]` |
 | 2025-12-04-cpu_debug.md | `["Debug", "Linux", "Performance"]` |
 | 2025-12-24-flat_hash_map.md | `["C++", "Performance"]` |
-| 2025-12-26-if_pre.md.md | `["Performance", "HFT", "C++"]` |
+| 2025-12-26-if_pre.md | `["Performance", "HFT", "C++"]` |
 | 2025-12-26-various_map.md | `["C++", "Performance"]` |
 | 2026-01-15-debug_procedure.md | `["Debug", "Linux"]` |
 | 2026-01-15-debug_procedure2.md | `["Debug", "Linux"]` |
-| 2026-01-19-core_ana.md.md | `["Debug", "C++"]` |
+| 2026-01-19-core_ana.md | `["Debug", "C++"]` |
 | 2026-01-23-corddump.md | `["Debug", "HFT"]` |
 | 2026-03-01-numa.md | `["Performance", "HFT"]` |
 | 2026-03-03-mutext.md | `["Concurrency", "C++", "Performance"]` |
-| 2026-03-03-websocket.md.md | `["Network", "HFT"]` |
+| 2026-03-03-websocket.md | `["Network", "HFT"]` |
 | 2026-03-04-try_catch.md | `["C++", "HFT"]` |
 | 2026-03-11-agent-setup.md | `["Tooling"]` |
 | 2026-03-17-net_proc.md | `["Network", "Linux", "HFT"]` |
