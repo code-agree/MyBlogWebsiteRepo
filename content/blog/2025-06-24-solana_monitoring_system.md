@@ -1,5 +1,5 @@
 +++
-title = 'Solana_monitor'
+title = 'Solana链上交易监控最佳实践：从logsSubscribe到全方位监控'
 date = 2024-12-20T03:08:38+08:00
 draft = false
 tags = ["Blockchain"]

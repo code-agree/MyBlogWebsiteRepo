@@ -1,5 +1,5 @@
 +++
-title = 'c++ 模版'
+title = 'C++模板类用法详解 - 以LockFreeRingBuffer为例'
 date = 2025-06-10T22:48:21+08:00
 draft = false
 tags = ["C++"]
