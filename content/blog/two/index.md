@@ -8,9 +8,6 @@ tags = ["C++"]
 
 # Const
 
-Owner: More_surface Ted
-Created time: July 25, 2024 4:59 PM
-
 const 可以用来修饰变量、函数、指针等。
 
 1. 修饰变量
