@@ -127,6 +127,7 @@ draft = true
 | 2026-04-27-timestamp.md | `["HFT", "Performance", "Linux", "Network"]` |
 | 2026-06-26-tcp_send_path.md | `["Network", "Linux", "HFT"]` |
 | 2026-08-07-spsc_queue_mengrao.md | `["Concurrency", "HFT", "C++", "LockFree"]` |
+| 2026-08-24-simd.md | `["HFT", "Performance", "C++"]` |
 
 ## 五、后续维护
 
