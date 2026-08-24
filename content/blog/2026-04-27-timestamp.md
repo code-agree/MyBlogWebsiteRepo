@@ -135,9 +135,9 @@ double calibrate_tsc_ghz(void) {
        两颗 socket 共用主板同一时钟发生器的 BCLK,RESET 同时解除、TSC 同时起跳
 ```
 
-**先给结论:在"内核已选用 `tsc` 作为 clocksource"的健康裸机上,跨 core 甚至跨 socket 的 TSC 读数是可以直接相减的。**"跨核不可减、减出来是负数"的印象主要来自老平台和虚拟机。原理分四层说清楚:
+**先给结论:在"内核已选用 `tsc` 作为 clocksource"的健康裸机上,跨 core 甚至跨 socket 的 TSC 读数是可以直接相减的**。"跨核不可减、减出来是负数"的印象主要来自老平台和虚拟机。原理分四层说清楚:
 
-**第一层:同 socket 内,所有核读的是同一个计数器的派生值。**现代 Intel 上 TSC 并不是每个核独立自由跑的计数器,而是从 uncore 里同一个 **ART(Always Running Timer,晶振直接驱动的不停表)**按固定比率换算出来的:
+**第一层:同 socket 内,所有核读的是同一个计数器的派生值**。现代 Intel 上 TSC 并不是每个核独立自由跑的计数器,而是从 uncore 里同一个 **ART**(Always Running Timer,晶振直接驱动的不停表)按固定比率换算出来的:
 
 ```
 TSC(core_i) = ART × (CPUID.15H.EBX / CPUID.15H.EAX) + K(core_i)
@@ -146,11 +146,11 @@ TSC(core_i) = ART × (CPUID.15H.EBX / CPUID.15H.EAX) + K(core_i)
 
 同 socket 所有核共享同一个 ART 和同一个比率,只要各核的偏移一致,任意两个核读到的 TSC 就落在同一条时间轴上,相减天然成立。AMD 结构类似(per-package 计数器 + 公共参考时钟)。
 
-**第二层:跨 socket 由同一个参考时钟驱动、同时起跳。**典型 1~2 路服务器主板上,100 MHz BCLK 由同一颗时钟发生器分发给两颗 CPU——两边的 ART 用的是**同一个频率源**,不存在"各自晶振 ppm 级漂移、越跑越远"。上电时 RESET 对两颗 CPU 同时解除,TSC 从 0 同时起跳。硬件层面残留的只是时钟分发路径造成的固定小偏差,量级纳秒到几十纳秒。
+**第二层:跨 socket 由同一个参考时钟驱动、同时起跳**。典型 1~2 路服务器主板上,100 MHz BCLK 由同一颗时钟发生器分发给两颗 CPU——两边的 ART 用的是**同一个频率源**,不存在"各自晶振 ppm 级漂移、越跑越远"。上电时 RESET 对两颗 CPU 同时解除,TSC 从 0 同时起跳。硬件层面残留的只是时钟分发路径造成的固定小偏差,量级纳秒到几十纳秒。
 
-**第三层:内核开机时替你验证过了。**Linux 在每个 CPU 上线时运行同步校验(`arch/x86/kernel/tsc_sync.c`):两个 CPU 交替读 TSC,检查是否观察到"时间倒流";支持 `IA32_TSC_ADJUST` 的平台还会校验各核该 MSR 是否一致,不一致直接修平。校验失败会打印 `Marking TSC unstable` 并放弃 tsc clocksource。反过来说,**你的系统正在用 tsc clocksource,这件事本身就是跨核一致性的证明**。
+**第三层:内核开机时替你验证过了**。Linux 在每个 CPU 上线时运行同步校验(`arch/x86/kernel/tsc_sync.c`):两个 CPU 交替读 TSC,检查是否观察到"时间倒流";支持 `IA32_TSC_ADJUST` 的平台还会校验各核该 MSR 是否一致,不一致直接修平。校验失败会打印 `Marking TSC unstable` 并放弃 tsc clocksource。反过来说,**你的系统正在用 tsc clocksource,这件事本身就是跨核一致性的证明**。
 
-**第四层:vDSO 每天都在做跨核相减。**`clock_gettime(CLOCK_MONOTONIC)` 的 vDSO 实现就是"在**当前核**上执行 `rdtsc`,套一组**全局**的 mult/shift 和基准值"。线程这次在 Core 3 调用、迁移到 Core 10 再调用,内核依然承诺结果单调——这个承诺成立的前提恰恰是跨核 TSC 可比。(vDSO 里有一个防倒流细节:读数若小于上次 timekeeping 更新记录的 `cycle_last` 就取后者,这正说明内核清楚残余 skew 存在但仅纳秒级、可掩盖。)跨线程测 handoff 延迟——收包线程打戳写共享内存、策略线程消费后相减——也是同一原理,这是 HFT 的标准做法。
+**第四层:vDSO 每天都在做跨核相减**。`clock_gettime(CLOCK_MONOTONIC)` 的 vDSO 实现就是"在**当前核**上执行 `rdtsc`,套一组**全局**的 mult/shift 和基准值"。线程这次在 Core 3 调用、迁移到 Core 10 再调用,内核依然承诺结果单调——这个承诺成立的前提恰恰是跨核 TSC 可比。(vDSO 里有一个防倒流细节:读数若小于上次 timekeeping 更新记录的 `cycle_last` 就取后者,这正说明内核清楚残余 skew 存在但仅纳秒级、可掩盖。)跨线程测 handoff 延迟——收包线程打戳写共享内存、策略线程消费后相减——也是同一原理,这是 HFT 的标准做法。
 
 那"不能相减"的说法从哪来?以下场景是真的不能:
 
