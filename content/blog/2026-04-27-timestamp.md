@@ -154,10 +154,34 @@ TSC(core_i) = ART × (CPUID.15H.EBX / CPUID.15H.EAX) + K(core_i)
 
 那"不能相减"的说法从哪来?以下场景是真的不能:
 
-- **虚拟机**:hypervisor 做 TSC offsetting,vCPU 调度、live migration 后 offset 会变,guest 里跨 vCPU 相减不可信。
+- **虚拟机**:hypervisor 做 TSC offsetting,vCPU 调度、live migration 后 offset 会变,guest 里跨 vCPU 相减不可信(底层机制见下面小节)。
 - **异常路径**:S3 挂起恢复、物理 CPU 热插拔、SMM/BIOS 写过 `IA32_TSC`/`IA32_TSC_ADJUST` 之后可能留下跨核偏移。内核 watchdog 通常能抓到并降级 clocksource——除非你把它关了(见 3.1 的 `tsc=reliable`)。
 - **老平台**:pre-Nehalem 的 Intel、TSC 随 P-state 变频的老 AMD——"减出来是负数"的恐怖故事大多来自那个年代。
 - **超短间隔**:同步校验和时钟分发的精度有限,跨 socket 残余 skew 最坏几十 ns。被测间隔比 skew 还短时,跨核相减确实可能出小负数。**测个位数纳秒必须同核**,这一条是严格成立的。
+
+#### 为什么裸机可以、虚拟机不行
+
+核心区别一句话:**裸机上 `rdtsc` 读到的是物理计数器本身;VM 里读到的是"物理计数器 + 一个 per-vCPU 的软件变换"**,这个变换是否跨 vCPU 一致,只靠 hypervisor 的簿记维持——硬件不保证,guest 也无法验证。
+
+裸机上,时间轴由前面四层说的硬件物理性质决定;唯一能破坏它的软件手段(写 `IA32_TSC`/`IA32_TSC_ADJUST`)在**你自己内核**的掌控之下,开机校验过、watchdog 盯着,证据链闭环。
+
+VM 里,硬件虚拟化给 `rdtsc` 加了一层变换。Intel VMX 下:
+
+```
+guest_TSC = (host_TSC × TSC_multiplier) >> 48 + TSC_OFFSET
+             └── TSC scaling,跨频率迁移用 ──┘   └─ per-vCPU 字段 ─┘
+```
+
+`TSC_OFFSET` 和 multiplier 都是 **per-vCPU** 的 VMCS 字段(AMD SVM 对应 VMCB offset + `TSC_RATIO`)。guest 执行 `rdtsc` 不触发 VM exit,硬件自动套上**这个 vCPU 自己的**变换再返回——每个 vCPU 看到的时间轴是 hypervisor 逐个构造出来的虚拟量。让所有 vCPU 的 offset 相等只是 hypervisor 的尽力而为,以下事件会让它们悄悄错开:
+
+- **vCPU 创建时刻不同 / 热插拔**:每个 vCPU 的 offset 在创建时单独计算,起点自带误差;KVM 会用启发式(短窗口内写相同目标值判定为"同步意图")对齐,但那是 heuristic 不是硬件保证。
+- **guest 写 TSC 被虚拟化成只改本 vCPU 的 offset**——裸机上会被 `tsc_sync` 修平的操作,VM 里反而成了偏差来源。
+- **快照恢复、live migration**:换宿主机后 host TSC 的值和频率都变,hypervisor 逐 vCPU 重建 offset(频率不同还要设 scaling),各自带误差,且 guest 全程无感知。
+- **catchup 退化**:宿主机不支持 TSC scaling 却要呈现不同频率时,KVM 退到软件"追赶"模式,逐 vCPU 动态调虚拟 TSC,一致性没有下限。
+
+关键的不对称在**可验证性**:guest 的 `tsc_sync` 校验只在 guest 启动那一刻跑过,验证的是"此刻 hypervisor 把 offset 摆齐了";之后 offset 随迁移、快照随时变,guest 既感知不到也无法重新校验。信任根从"硬件 + 自己的内核"变成了"hypervisor 的持续善意"。
+
+这也正是 **kvmclock/pvclock** 存在的原因:KVM 给每个 vCPU 一页 `{tsc_timestamp, system_time, mult, shift}` 换算参数,guest 用"本核 rdtsc + 本 vCPU 参数"算时间,绕开跨 vCPU 直接比较;只有 hypervisor 通过 `PVCLOCK_TSC_STABLE_BIT` 明确承诺 TSC 稳定同步时,guest 的 vDSO 才敢直接用裸 rdtsc。所以 VM 里 `current_clocksource` 常见 `kvmclock`/`hyperv_clocksource` 而不是 `tsc`——这是 guest 内核在告诉你:这台机器上裸 TSC 不可全信。反之,若 VM 里 clocksource 就是 tsc 且平台明确承诺(如 AWS Nitro 暴露 invariant TSC、不做 live migration),跨 vCPU 相减通常也没问题——但那是平台承诺,不是裸机那种可自证的硬件性质,HFT 的保守做法仍是 VM 里不信裸 TSC 跨核比较。
 
 实战后果:
 
