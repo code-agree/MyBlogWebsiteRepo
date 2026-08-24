@@ -45,7 +45,9 @@ tags = ["HFT", "Performance", "Linux", "Network"]
 
 ### 2.1 为什么是 TSC
 
-现代 Intel/AMD 的 **invariant TSC**(CPUID 里 `constant_tsc` + `nonstop_tsc` 两个 flag)以恒定频率递增,不受 CPU 频率变化、C-state、P-state 影响。读一条 `rdtsc` 指令只要十几个周期,是软件测量的物理下限。
+现代 Intel/AMD 的 **invariant TSC**(CPUID 里 `constant_tsc` + `nonstop_tsc` 两个 flag)以恒定频率递增,不受 CPU 频率变化、C-state、P-state 影响。
+
+值得把底层机制说透:TSC **并不是在数"核心实际执行了多少个周期"**。它的计数源是 uncore 里晶振直接驱动的 ART(换算关系见 2.4 的公式),以 CPU **标称基准频率**为刻度恒速递增——本质是一个"以周期为单位的墙钟"。核心 turbo 到 4.5 GHz 也好、睡进深度 C-state 也好,TSC 都按标称频率的节拍走,这正是它能当时间源的根本原因。也因为 `rdtsc` 做的只是把这个持续运行的计数器搬进 EDX:EAX——没有内存访问、没有特权切换、没有流水线冲刷——单次读数只要十几个周期,是软件测量的物理下限。
 
 检查你的 CPU 是否支持:
 
@@ -63,7 +65,34 @@ cat /sys/devices/system/clocksource/clocksource0/current_clocksource
 
 ### 2.2 正确的读法:Fence 与 `rdtscp`
 
-裸 `rdtsc` 可以被 CPU 乱序执行和编译器重排移动到你不期望的位置。两种主流解法:
+#### 为什么裸 `rdtsc` 会不准:乱序执行
+
+现代 CPU 按程序序取指、译码进 ROB(重排序缓冲区),但**执行是乱序的**:调度器只看数据依赖,谁的操作数就绪谁先上执行单元,最后再按程序序退休。而 `rdtsc` 与被测代码之间**没有任何数据依赖**——被测代码不产生它的输入,它的输出也不被被测代码消费。Intel SDM 对此说得很直白:`rdtsc` 不是序列化指令,不保证之前的指令执行完才读数,之后的指令也可能在读数之前就开始执行。于是乱序引擎可以把它在指令流里随意"漂移"(现代大核的乱序窗口有 500+ 条指令深):
+
+```
+你写的程序序:          实际可能的执行序:
+  t0 = rdtsc             work_A          ← 被测代码先跑了
+  work_A                 t0 = rdtsc      ← 起点晚读,窗口偏小
+  work_B                 t1 = rdtsc      ← work_B 的 load 还没回来,终点早读
+  t1 = rdtsc             work_B(继续在飞)
+```
+
+被测对象只有几十 ns 时,这种几十上百周期的漂移就是 100% 量级的误差,甚至能测出"负耗时"。
+
+#### fence 的语义与摆放
+
+`lfence` 在这里不是当内存屏障用,而是当**指令流序列化点**用,架构语义是:之前所有指令**本地完成**它才执行;它完成之前,之后的指令不得**开始执行**。(Spectre 之后 AMD 平台也序列化——Linux 会设置 `LFENCE_SERIALIZE` MSR 位;此前 AMD 的 lfence 不序列化,这是很多老测量代码在 AMD 上不准的原因。)完整模式逐个位置看:
+
+```
+lfence      ; ① 等测量之外的前置代码执行完,别漏进窗口
+rdtsc       ; 读 t0
+lfence      ; ② 拦住被测代码,不许在 t0 读到之前开始执行
+<被测代码>
+rdtscp      ; ③ 内置"等之前指令执行完"的语义 → 被测代码跑完才读 t1
+lfence      ; ④ 拦住后续指令,不许在 t1 读完之前开始执行
+```
+
+①③ 解决"读数早了",②④ 解决"代码跑早了"。`rdtscp` 的特殊之处是把 ③ 内置了,所以终点用它;但它只管"等前面"、不拦"后面提前开始",所以 ④ 的 lfence 不能省。落到 C 代码,两种主流写法:
 
 ```c
 #include <x86intrin.h>
@@ -91,7 +120,18 @@ static inline uint64_t rdtsc_end(void) {
 }
 ```
 
-Intel 在 "How to Benchmark Code Execution Times on Intel IA-32 and IA-64" 白皮书里推荐的典型模式是 **起点用 `CPUID; RDTSC`,终点用 `RDTSCP; CPUID`**,但 `CPUID` 本身抖动很大(有时 100+ cycles),生产代码里大多折中为 `LFENCE; RDTSC ... RDTSCP; LFENCE`。
+两个容易漏的边角:
+
+- **编译器重排是另一层**:`__rdtsc()` intrinsic 对编译器不是屏障,普通计算可以被编译器移过它;内联汇编写法需要 `"memory"` clobber。编译器重排和 CPU 乱序是两层独立的问题,要分别想清楚。
+- **lfence 不排空 store buffer**:它等的是指令"本地完成",store 退休进 store buffer 就算完成、不等全局可见。所以你测到的是"执行延迟",不含 store 刷出的时间——测耗时这正是想要的语义;"数据何时对别的核可见"是缓存一致性的问题,不归它管。
+
+#### 白皮书里的 CPUID 是怎么回事
+
+Intel 在 "How to Benchmark Code Execution Times on Intel IA-32 and IA-64" 白皮书里推荐的模式是**起点用 `CPUID; RDTSC`,终点用 `RDTSCP; CPUID`**。这里的 `CPUID` 本职是查询 CPU 身份与能力的指令:把查询项编号(leaf)放进 EAX 执行,结果填回 EAX/EBX/ECX/EDX——厂商字符串、特性位(`/proc/cpuinfo` 的 flags 就来自它)、2.4 节公式里的 TSC/ART 比率(leaf `0x15`)、invariant TSC 位(leaf `0x80000007`)都从这查。
+
+它被拉进测量领域是因为一个副作用:CPUID 是**完全序列化指令**——执行前,之前所有指令的全部效果(寄存器、标志位、内存写)必须完成、缓冲写排空;之后的指令重新取指执行。这类指令几乎全是特权指令,CPUID 长期是唯一一条用户态可用的,白皮书选它就是图这个。
+
+生产代码弃用它的原因:排空整条流水线本身要 100~300+ 周期,微码实现、不同 leaf 耗时不同,抖动可达上百周期——测几十 ns 的对象,仪器噪声比信号还大;VM 里它还必然触发 VM exit(hypervisor 要拦截它伪造 CPU 身份),几千周期起步。而时间测量需要的只是"读数别漂移",`lfence` 的轻量序列化就够了,所以生产代码收敛为 `LFENCE; RDTSC ... RDTSCP; LFENCE`。顺带:较新的 CPU(Alder Lake / Sapphire Rapids 起,flag 为 `serialize`)提供了专门的 `SERIALIZE` 指令,序列化语义与 CPUID 相同但无查询副作用、不破坏寄存器——算是对"拿 CPUID 当栅栏"这个历史怪癖的正式修正,不过对时间测量而言 lfence 仍是更轻更对口的选择。
 
 ### 2.3 TSC 到纳秒的换算
 
