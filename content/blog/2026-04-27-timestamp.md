@@ -31,11 +31,13 @@ tags = ["HFT", "Performance", "Linux", "Network"]
 | `clock_gettime(CLOCK_MONOTONIC)` (vDSO) | 纳秒 | ~20~30 ns | ✅ 常用 | 底层也是 TSC + 换算,省去自己标定 |
 | `clock_gettime(CLOCK_MONOTONIC_RAW)` | 纳秒 | ~20~30 ns | ⚠️ 特殊 | 不受 NTP 频率调整,更"原生" |
 | `clock_gettime(CLOCK_REALTIME)` | 纳秒 | ~20~30 ns | ❌ 测延迟 / ✅ 打墙钟 | 会被 NTP 跳变,不能用于计算耗时 |
-| `clock_gettime(CLOCK_TAI)` | 纳秒 | ~20~30 ns | ✅ 日志 | 不含闰秒,与交易所对时干净利落 |
+| `clock_gettime(CLOCK_TAI)` | 纳秒 | ~20~30 ns | ✅ 日志 | 不含闰秒,但仍会跟随系统墙钟 step |
 | `gettimeofday()` | 微秒 | ~20 ns | ❌ | 精度不够,POSIX 已不推荐 |
 | HPET | 10~100 ns | 几百 ns ~ 1 μs | ❌ | MMIO 访问,比 TSC 慢数十倍 |
 | NIC 硬件时间戳 | 数十 ns(含 PHY) | 内核旁路返回 | ✅ 必备 | 唯一能测 wire-to-wire 的手段 |
-| `time()` / `clock()` | 秒 / jiffies(10 ms) | — | ❌ | 毫无竞争力 |
+| `time()` / `clock()` | 秒 / 进程 CPU 时间 | — | ❌ | `time()` 太粗,`clock()` 不是墙钟 |
+
+表中的 `clock_gettime` 开销默认假设 x86_64 新内核走 vDSO。较老内核上 `CLOCK_MONOTONIC_RAW`/`CLOCK_TAI` 可能退化为 syscall,开销会高出数倍。
 
 ---
 
@@ -66,10 +68,12 @@ cat /sys/devices/system/clocksource/clocksource0/current_clocksource
 ```c
 #include <x86intrin.h>
 
-// 方案 A: rdtscp 自带 load serialization(等所有前面的指令完成才读)
+// 方案 A: rdtscp 等前面的指令完成后才读;作为起点时后面仍建议 lfence
 static inline uint64_t rdtscp_start(void) {
     unsigned aux;
-    return __rdtscp(&aux);   // 不需要额外 fence
+    uint64_t t = __rdtscp(&aux);
+    _mm_lfence();
+    return t;
 }
 
 // 方案 B: lfence + rdtsc(对测量起点更精确)
@@ -115,7 +119,7 @@ double calibrate_tsc_ghz(void) {
 }
 ```
 
-在生产系统里,要么这样标定一次后缓存系数,要么直接读 `/sys/devices/system/clocksource/clocksource0/` 相关信息,要么从内核 VDSO 的 TSC 参数反推(高级玩法)。
+在生产系统里,要么这样标定一次后缓存系数,要么从 `perf_event_open` 的 mmap page 或 vDSO 暴露的时间换算参数反推(高级玩法)。`/sys/devices/system/clocksource/clocksource0/` 只能看到当前/可用 clocksource,主线内核不在这里导出 TSC 频率。
 
 ### 2.4 多 socket 的同步问题
 
@@ -124,18 +128,18 @@ double calibrate_tsc_ghz(void) {
 ```
 ┌───────── Socket 0 ─────────┐    ┌───────── Socket 1 ─────────┐
 │  Core0 Core1 ... CoreN     │    │  Core0 Core1 ... CoreN     │
-│       共享一个 TSC 源       │    │       共享一个 TSC 源       │
+│       共享/校准的 TSC       │    │       共享/校准的 TSC       │
 │  L3 / Uncore / MemCtrl     │    │  L3 / Uncore / MemCtrl     │
 └──────────────┬─────────────┘    └──────────────┬─────────────┘
                └──── UPI/QPI (Intel) 或 Infinity Fabric (AMD) ──┘
-                每边各有一套独立晶振驱动的 TSC 计数器
+                现代平台通常由公共参考时钟和固件/硬件机制维持同步
 ```
 
 为什么跨 socket 的 TSC 会有差异:
 
-- **每个 socket 各有自己的硬件计数器**。两颗 CPU 是物理独立的电路,各自由各自的晶振/PLL 驱动。哪怕标称都是 3.0 GHz,两颗晶振实际频率会有 ppm 级偏差,跑得久了自然错开。
-- **开机对齐难度大**。BIOS 会给每个 socket 的 TSC 写共同初值(通常 0),但"同一瞬间写两个 socket"在物理上做不到——BIOS 代码只能跑在一个核心上,通过 IPI 通知其他 socket 写入,这个过程本身就有几百纳秒到几微秒的不确定性。Nehalem 之前的平台甚至根本不做这件事。
-- **运行期漂移**。即便开机对齐了,深度 C-state、跨 socket 时钟域的小抖动都会让两套 TSC 慢慢分开。Skylake-SP/Ice Lake、EPYC Rome 之后做了大量工程改进(TSC 通过 UPI 定期校准),但硬件给出的承诺是"近似同步",而不是"绝对一致的同一瞬间"。
+- **计数器是 per core/per package 的硬件状态**。现代多路服务器通常用公共参考时钟,并由固件/硬件在启动和运行期维持 TSC 同步;这比早期平台可靠得多,但不是跨 socket 读数在任意场景下都零偏差。
+- **异常路径会破坏假设**。S3 恢复、CPU 热插拔、虚拟化迁移、BIOS/内核写 `IA32_TSC` 或 `IA32_TSC_ADJUST` 等场景,都可能留下跨核/跨 socket 偏移。
+- **内核信任不等于测量点可随意迁移**。即便 `constant_tsc`/`nonstop_tsc` 平台上 TSC 不受频率和深度 C-state 影响,线程迁移仍会引入缓存、NUMA 和调度噪声。
 
 实战后果:
 
@@ -145,7 +149,7 @@ uint64_t t0 = rdtsc_start();
 // ... 线程被内核调度到 Socket 1 的 Core 10 ...
 do_some_work();
 uint64_t t1 = rdtsc_end();
-uint64_t elapsed = t1 - t0;   // 可能是负数!可能偏差几十纳秒!
+uint64_t elapsed = t1 - t0;   // 若 t1 < t0 会回绕成巨大正数,也可能偏差几十纳秒
 ```
 
 应对方法:
@@ -198,7 +202,7 @@ GRUB_CMDLINE_LINUX="isolcpus=2-15 nohz_full=2-15 rcu_nocbs=2-15 \
 ```
 
 - `isolcpus`:从调度器里拿走这些核,普通进程不会被调度上来。
-- `nohz_full`:关掉这些核上的周期性时钟中断(tickless),减少 1000 Hz 抖动。
+- `nohz_full`:尽量让这些核进入 full tickless 模式,减少 1000 Hz 抖动;单 runnable 任务时仍可能保留 1 Hz 残余 tick。
 - `rcu_nocbs`:把 RCU 回调卸载到其他核。
 - `idle=poll` + `max_cstate=0`:禁止 CPU 进入节能状态,避免唤醒延迟(代价是功耗飙升,发热严重)。
 - `mitigations=off`:关掉 Spectre/Meltdown 缓解(自行评估安全 vs 性能的权衡)。
@@ -226,8 +230,10 @@ cpupower frequency-set -d 3.5GHz -u 3.5GHz   # 锁死频率,关 Turbo
 把网卡中断 pin 到**非交易核**(通常是同 NUMA 的相邻核),避免 IRQ 抢断热路径:
 
 ```bash
-echo 2 > /proc/irq/<nic_irq>/smp_affinity_list
+echo 0 > /proc/irq/<nic_irq>/smp_affinity_list
 ```
+
+如果行情/订单流量走 kernel bypass 并由用户态 poll 队列,IRQ 亲和性主要影响控制面和仍走内核栈的流量;热路径还要看 bypass 框架自己的队列/线程绑定。
 
 ### 3.4 大页与 NUMA
 
@@ -254,8 +260,8 @@ echo never > /sys/kernel/mm/transparent_hugepage/enabled
 
 墙钟会跳变。NTP 同步、管理员手动改时间、夏令时切换——任何一次跳变都会让你的"超时判断"出错:
 
-- 时钟被往**前**调 3 分钟:你以为离上次执行才过了 2 分钟,实际触发时间已经晚了 5 分钟。
-- 时钟被往**后**调 3 分钟:`now - last` 变成负数,逻辑直接崩溃,或者干脆永远不触发。
+- 时钟被往**回**拨 3 分钟:`now - last` 变小甚至变成负数,周期任务迟触发,或者干脆永远不触发。
+- 时钟被往**未来**拨 3 分钟:`now - last` 突然变大,周期任务提前触发,超时判断也会误报。
 
 这种 bug 在生产环境真的会发生,而且通常出现在凌晨某次 NTP 大幅修正之后,极难复现。
 
@@ -311,11 +317,13 @@ epoll_ctl(epfd, EPOLL_CTL_ADD, tfd, &ev);
 
 ### 5.1 工作原理
 
-支持 PTP 的网卡(Solarflare/Xilinx X2、Mellanox/NVIDIA ConnectX-6 以上、Intel E810 等)在 MAC/PHY 层对每个收到的包打上一个硬件时间戳(来自网卡自带的 **PHC — PTP Hardware Clock**)。这个时间戳跟着 skb 走,最终通过 `recvmsg` 的 ancillary data(`SCM_TIMESTAMPING`)交给用户态。
+支持 PTP 的网卡(Solarflare/Xilinx X2、Mellanox/NVIDIA ConnectX-4/5/6、Intel E810 等)在 MAC/PHY 层对每个收到的包打上一个硬件时间戳(来自网卡自带的 **PHC — PTP Hardware Clock**)。这个时间戳跟着 skb 走,最终通过 `recvmsg` 的 ancillary data(`SCM_TIMESTAMPING`)交给用户态。
 
 ### 5.2 启用方法
 
 ```c
+// 还需要先对网卡下 SIOCSHWTSTAMP ioctl(或用 hwstamp_ctl/ethtool netlink)启用硬件打戳;
+// ptp4l 常会代劳。只设置 socket option 时,网卡未启用会导致 ts[2] 一直为 0。
 int flags = SOF_TIMESTAMPING_RX_HARDWARE
           | SOF_TIMESTAMPING_RAW_HARDWARE
           | SOF_TIMESTAMPING_TX_HARDWARE;
@@ -343,7 +351,7 @@ for (struct cmsghdr *cm = CMSG_FIRSTHDR(&msg); cm; cm = CMSG_NXTHDR(&msg, cm)) {
 
 ### 5.3 旁路方案
 
-更激进的路线是直接绕过内核协议栈,用 **DPDK**、**Solarflare OpenOnload**、**Mellanox VMA/rivermax** 或 **ef_vi** 这类 kernel bypass 框架,时间戳同样由硬件提供,但用户态直接 poll 网卡队列,省去系统调用和中断开销。这是目前主流 HFT 的标准配置。
+更激进的路线是直接绕过内核协议栈,用 **DPDK**、**Solarflare OpenOnload**、**Mellanox VMA/XLIO** 或 **ef_vi** 这类 kernel bypass 框架,时间戳同样由硬件提供,但用户态直接 poll 网卡队列,省去系统调用和中断开销。这是目前主流 HFT 的标准配置。
 
 ---
 
@@ -354,9 +362,9 @@ for (struct cmsghdr *cm = CMSG_FIRSTHDR(&msg); cm; cm = CMSG_NXTHDR(&msg, cm)) {
 ### 6.1 选哪个时钟
 
 - **`CLOCK_REALTIME`**:跟随系统墙钟,会被闰秒跳变影响,合规审计时需要小心。
-- **`CLOCK_TAI`**:国际原子时,不含闰秒,单调向前。推荐用于 HFT 日志/订单时间戳——交易所大多也用 TAI 或显式处理闰秒。
+- **`CLOCK_TAI`**:国际原子时,不含闰秒,适合内部日志避免 UTC 闰秒歧义。但 Linux 的 `CLOCK_TAI` 派生自系统墙钟和 TAI offset,管理员手动 step 或 PTP/NTP step 修正系统时钟时它也会跳变,不能拿来做超时/耗时判断。
 
-从 Linux 3.10 起支持 `CLOCK_TAI`,前提是系统 TAI offset 已正确设置(`adjtimex(2)`,一般 PTP 守护进程会自动维护)。
+从 Linux 3.10 起支持 `CLOCK_TAI`,前提是系统 TAI offset 已正确设置(`adjtimex(2)`,一般 PTP 守护进程会自动维护)。监管上报、交易所协议和对外时间戳通常仍要求 UTC,内部用 TAI 时必须在边界处显式转换。
 
 ### 6.2 PTP:如何让系统时钟精确对齐
 
@@ -425,10 +433,10 @@ pmc -u -b 0 'GET CURRENT_DATA_SET'
 | 来源 | 时间基准 | 典型精度 |
 |------|---------|---------|
 | 交易所行情 `SendingTime`(FIX/ITCH/OUCH) | UTC 墙钟(交易所 PTP/GPS) | μs ~ ns |
-| 交易所撮合时间戳 | UTC 墙钟 | ns(CME、上交所等) |
+| 交易所撮合时间戳 | UTC 墙钟 | μs ~ ns(不同市场差异很大) |
 | 上游网关打的时间戳 | 上游机器墙钟 | μs |
-| NIC 硬件 RX 时间戳 | 本机 PHC(PTP 同步到 UTC) | ns |
-| 应用层 `clock_gettime(REALTIME/TAI)` | 本机系统钟(PTP 同步到 UTC) | ns |
+| NIC 硬件 RX 时间戳 | 本机 PHC(PTP 同步到 PTP timescale 或 UTC) | ns |
+| 应用层 `clock_gettime(REALTIME/TAI)` | 本机系统钟(PTP 同步后按所选 clock 暴露) | ns |
 
 跨机器比较的两边**必须都是 UTC 墙钟(或 TAI),且两端时钟偏差远小于你关心的延迟数量级**。这正是 HFT 必须部署 PTP 的根本理由——NTP 那种毫秒级偏差,根本测不准微秒级的链路延迟。
 
@@ -440,8 +448,9 @@ pmc -u -b 0 'GET CURRENT_DATA_SET'
 
 `REALTIME` 还是 `TAI`:
 
-- 交易所大多用 UTC、`SendingTime` 是 UTC epoch ns → 用 `CLOCK_REALTIME`。
-- 部分交易所用 TAI 或自行处理闰秒(CME 用 leap smear)→ 用 `CLOCK_TAI`,避免闰秒带来的瞬间错乱。
+- 交易所和监管口径大多用 UTC、`SendingTime` 是 UTC → 用 `CLOCK_REALTIME` 或把本地 TAI 显式减去 UTC offset 后再比较。
+- 少数外部系统若明确给 TAI 或私有 timescale → 用 `CLOCK_TAI` 或对应 timescale,避免闰秒带来的瞬间错乱。
+- CME 的公开 leap second 处理不是 smear:它在正闰秒时重复 `23:59:59`,不发送 `23:59:60`,并会拒绝带 `23:59:60` 的 iLink 消息。
 - **不管选哪个,两边必须一致**。如果交易所给 UTC、你存 TAI,中间差 37 秒——典型的灾难级 bug。
 
 ### 7.3 基本写法
@@ -469,7 +478,7 @@ uint64_t hw_rx_ns = hw_rx.tv_sec * 1000000000ULL + hw_rx.tv_nsec;
 int64_t wire_latency = hw_rx_ns - exchange_sending_ns;
 ```
 
-前提是 `phc2sys` 已经把 PHC 同步到 UTC。这个 `wire_latency` 排除了协议栈抖动,是软件能测到的最干净的链路延迟。DPDK、ef_vi 等 kernel bypass 框架也都暴露硬件时间戳,API 不同但概念一样。
+前提是 `hw_rx_ns` 和 `exchange_sending_ns` 已经在同一时间基准上。常见 linuxptp 部署里,`ptp4l` 会让 PHC 跟随 PTP timescale(TAI),`phc2sys -w` 同步到 `CLOCK_REALTIME` 时才按 `currentUtcOffset` 转成 UTC;如果直接拿 `ts->ts[2]` 的 raw PHC 时间戳去减交易所 UTC `SendingTime`,可能恒差 37 秒。实操时要么把 PHC 时间转换到 UTC,要么确认 Grandmaster/PHC 运行在 UTC/ARB timescale。这个 `wire_latency` 排除了协议栈抖动,是软件能测到的最干净的链路延迟。DPDK、ef_vi 等 kernel bypass 框架也都暴露硬件时间戳,API 不同但概念一样。
 
 ### 7.5 解读结果时的几个陷阱
 
@@ -491,9 +500,9 @@ struct latency_sample {
 };
 ```
 
-**闰秒**。UTC 偶尔插入闰秒,那一秒可能被 leap smear、stop-clock 或跳变,取决于 OS 和 PTP/NTP 配置。真出闰秒时你可能看到几百毫秒的"诡异延迟"。规避:**用 `CLOCK_TAI`**,TAI 不含闰秒,单调向前。
+**闰秒**。UTC 偶尔插入闰秒,那一秒可能被 leap smear、stop-clock 或跳变,取决于 OS 和 PTP/NTP 配置。真出闰秒时你可能看到几百毫秒的"诡异延迟"。规避方法是内部统一使用 `CLOCK_TAI` 或明确的私有 timescale,并在对外/监管边界转换回 UTC;不要把 TAI 当成单调计时器。
 
-**消息里时间戳的单位和纪元**。每家交易所格式不同——CME MDP3 用 UTC nanos since epoch、Nasdaq ITCH 用当日 midnight 起的纳秒、上交所/深交所某些协议用 `YYYYMMDDHHMMSSmmm` 字符串。**读协议文档,别凭感觉**。这里的 bug 一旦发生,所有延迟统计都是废的。
+**消息里时间戳的单位和纪元**。每家交易所格式不同——CME MDP3 用 UTC nanos since epoch、Nasdaq ITCH 用当日 midnight 起的纳秒、上交所/深交所某些协议常见毫秒级 `YYYYMMDDHHMMSSmmm` 或快照时间字段。**读协议文档,别凭感觉**。这里的 bug 一旦发生,所有延迟统计都是废的。
 
 ---
 
@@ -557,10 +566,10 @@ Gil Tene 反复强调的经典陷阱:如果系统卡住 100 ms,而你的测试�
 7. **忽略 Coordinated Omission**:压测工具选错,结果再漂亮都是假的。
 8. **没隔离 CPU、没禁中断**:OS 抖动(SMI、NMI、timer tick)会给你随机加上几十微秒。
 9. **不监控 PTP offset**:PTP 可能静默失步,日志时间戳看上去正常但早已飘了,合规审计时炸锅。
-10. **TSC 频率只标定一次就不管**:长时间运行后温度变化、OS 更新可能导致微小偏移,生产系统应定期重校。
+10. **TSC 频率只标定一次就不管**:长时间运行后晶振温漂(ppm 级,1 ppm 约等于每秒 1 μs 误差)和初次标定精度有限,生产系统应定期重校或用内核/vDSO 参数。
 11. **跨机器减 monotonic**:`CLOCK_MONOTONIC` 在不同机器之间没有可比性,跨机器比较只能用 `REALTIME`/`TAI` + PTP。
 12. **混用 UTC 和 TAI**:交易所给 UTC 你存 TAI,差 37 秒;反过来一样灾难。两端时间基准必须显式约定。
-13. **闰秒未处理**:UTC 闰秒可能引发"诡异几百毫秒延迟"。日志或跨机器比较推荐统一用 `CLOCK_TAI`。
+13. **闰秒未处理**:UTC 闰秒可能引发"诡异几百毫秒延迟"。内部日志可统一用 `CLOCK_TAI`,但跨机器比较和对外字段必须显式约定 UTC/TAI 基准。
 
 ---
 
