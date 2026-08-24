@@ -1,6 +1,6 @@
 +++
 title = 'SIMD Parser 原理精读:把逐字节状态机编译成位运算数据流'
-date = 2026-08-24T21:30:00+08:00
+date = 2026-08-24T19:30:00+08:00
 draft = false
 tags = ["HFT", "Performance", "C++", "SIMD"]
 +++
