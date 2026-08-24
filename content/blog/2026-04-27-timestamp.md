@@ -121,25 +121,43 @@ double calibrate_tsc_ghz(void) {
 
 在生产系统里,要么这样标定一次后缓存系数,要么从 `perf_event_open` 的 mmap page 或 vDSO 暴露的时间换算参数反推(高级玩法)。`/sys/devices/system/clocksource/clocksource0/` 只能看到当前/可用 clocksource,主线内核不在这里导出 TSC 频率。
 
-### 2.4 多 socket 的同步问题
+### 2.4 跨 core / 跨 socket:TSC 到底能不能相减?
 
 要先解释 "socket" 是什么:这里指**主板上的物理 CPU 插槽**(中文有时叫"路"),不是网络编程里的 socket,也不是 Unix domain socket。一台双路服务器就是主板上插了两颗独立的 CPU 芯片,每颗叫一个 socket,内部各有若干核心(core)。HFT 服务器常见 1~2 路。
 
 ```
 ┌───────── Socket 0 ─────────┐    ┌───────── Socket 1 ─────────┐
 │  Core0 Core1 ... CoreN     │    │  Core0 Core1 ... CoreN     │
-│       共享/校准的 TSC       │    │       共享/校准的 TSC       │
+│   TSC 均派生自本包的 ART    │    │   TSC 均派生自本包的 ART    │
 │  L3 / Uncore / MemCtrl     │    │  L3 / Uncore / MemCtrl     │
 └──────────────┬─────────────┘    └──────────────┬─────────────┘
                └──── UPI/QPI (Intel) 或 Infinity Fabric (AMD) ──┘
-                现代平台通常由公共参考时钟和固件/硬件机制维持同步
+       两颗 socket 共用主板同一时钟发生器的 BCLK,RESET 同时解除、TSC 同时起跳
 ```
 
-为什么跨 socket 的 TSC 会有差异:
+**先给结论:在"内核已选用 `tsc` 作为 clocksource"的健康裸机上,跨 core 甚至跨 socket 的 TSC 读数是可以直接相减的。**"跨核不可减、减出来是负数"的印象主要来自老平台和虚拟机。原理分四层说清楚:
 
-- **计数器是 per core/per package 的硬件状态**。现代多路服务器通常用公共参考时钟,并由固件/硬件在启动和运行期维持 TSC 同步;这比早期平台可靠得多,但不是跨 socket 读数在任意场景下都零偏差。
-- **异常路径会破坏假设**。S3 恢复、CPU 热插拔、虚拟化迁移、BIOS/内核写 `IA32_TSC` 或 `IA32_TSC_ADJUST` 等场景,都可能留下跨核/跨 socket 偏移。
-- **内核信任不等于测量点可随意迁移**。即便 `constant_tsc`/`nonstop_tsc` 平台上 TSC 不受频率和深度 C-state 影响,线程迁移仍会引入缓存、NUMA 和调度噪声。
+**第一层:同 socket 内,所有核读的是同一个计数器的派生值。**现代 Intel 上 TSC 并不是每个核独立自由跑的计数器,而是从 uncore 里同一个 **ART(Always Running Timer,晶振直接驱动的不停表)**按固定比率换算出来的:
+
+```
+TSC(core_i) = ART × (CPUID.15H.EBX / CPUID.15H.EAX) + K(core_i)
+             // K 含 IA32_TSC_ADJUST 等软件可写偏移,正常情况下为 0
+```
+
+同 socket 所有核共享同一个 ART 和同一个比率,只要各核的偏移一致,任意两个核读到的 TSC 就落在同一条时间轴上,相减天然成立。AMD 结构类似(per-package 计数器 + 公共参考时钟)。
+
+**第二层:跨 socket 由同一个参考时钟驱动、同时起跳。**典型 1~2 路服务器主板上,100 MHz BCLK 由同一颗时钟发生器分发给两颗 CPU——两边的 ART 用的是**同一个频率源**,不存在"各自晶振 ppm 级漂移、越跑越远"。上电时 RESET 对两颗 CPU 同时解除,TSC 从 0 同时起跳。硬件层面残留的只是时钟分发路径造成的固定小偏差,量级纳秒到几十纳秒。
+
+**第三层:内核开机时替你验证过了。**Linux 在每个 CPU 上线时运行同步校验(`arch/x86/kernel/tsc_sync.c`):两个 CPU 交替读 TSC,检查是否观察到"时间倒流";支持 `IA32_TSC_ADJUST` 的平台还会校验各核该 MSR 是否一致,不一致直接修平。校验失败会打印 `Marking TSC unstable` 并放弃 tsc clocksource。反过来说,**你的系统正在用 tsc clocksource,这件事本身就是跨核一致性的证明**。
+
+**第四层:vDSO 每天都在做跨核相减。**`clock_gettime(CLOCK_MONOTONIC)` 的 vDSO 实现就是"在**当前核**上执行 `rdtsc`,套一组**全局**的 mult/shift 和基准值"。线程这次在 Core 3 调用、迁移到 Core 10 再调用,内核依然承诺结果单调——这个承诺成立的前提恰恰是跨核 TSC 可比。(vDSO 里有一个防倒流细节:读数若小于上次 timekeeping 更新记录的 `cycle_last` 就取后者,这正说明内核清楚残余 skew 存在但仅纳秒级、可掩盖。)跨线程测 handoff 延迟——收包线程打戳写共享内存、策略线程消费后相减——也是同一原理,这是 HFT 的标准做法。
+
+那"不能相减"的说法从哪来?以下场景是真的不能:
+
+- **虚拟机**:hypervisor 做 TSC offsetting,vCPU 调度、live migration 后 offset 会变,guest 里跨 vCPU 相减不可信。
+- **异常路径**:S3 挂起恢复、物理 CPU 热插拔、SMM/BIOS 写过 `IA32_TSC`/`IA32_TSC_ADJUST` 之后可能留下跨核偏移。内核 watchdog 通常能抓到并降级 clocksource——除非你把它关了(见 3.1 的 `tsc=reliable`)。
+- **老平台**:pre-Nehalem 的 Intel、TSC 随 P-state 变频的老 AMD——"减出来是负数"的恐怖故事大多来自那个年代。
+- **超短间隔**:同步校验和时钟分发的精度有限,跨 socket 残余 skew 最坏几十 ns。被测间隔比 skew 还短时,跨核相减确实可能出小负数。**测个位数纳秒必须同核**,这一条是严格成立的。
 
 实战后果:
 
@@ -149,14 +167,16 @@ uint64_t t0 = rdtsc_start();
 // ... 线程被内核调度到 Socket 1 的 Core 10 ...
 do_some_work();
 uint64_t t1 = rdtsc_end();
-uint64_t elapsed = t1 - t0;   // 若 t1 < t0 会回绕成巨大正数,也可能偏差几十纳秒
+uint64_t elapsed = t1 - t0;
+// 健康裸机上这个差值本身有效;真正的问题是"迁移"这个动作
+// 给测量叠加了微秒级调度开销和缓存失效,噪声远大于几十 ns 的 skew
 ```
 
 应对方法:
 
-- 把测量线程 pin 到固定核心:`pthread_setaffinity_np` 或 `taskset`。
-- 更严格做法:pin 到**同一 socket** 内的核心,避免跨插槽调度。
-- 新平台 TSC 跨 socket 同步机制已经很可靠,但生产环境仍应 pin 线程——这同时解决缓存亲和性问题。
+- 生产环境仍然把线程 pin 死(`pthread_setaffinity_np` 或 `taskset`),但主要理由是**消除调度/迁移噪声、保住缓存与 NUMA 局部性、规避上面的异常路径**,而不是"跨核不可减"。
+- 追求个位数纳秒精度的微基准:起点和终点必须在**同一个 core** 上读。
+- 跨线程的 handoff 延迟可以放心跨核相减,前提是 clocksource 为 tsc 且 dmesg 干净(见下)。
 
 顺带,Linux 内核对 TSC 的信任程度会写在启动日志里:
 
@@ -206,6 +226,7 @@ GRUB_CMDLINE_LINUX="isolcpus=2-15 nohz_full=2-15 rcu_nocbs=2-15 \
 - `rcu_nocbs`:把 RCU 回调卸载到其他核。
 - `idle=poll` + `max_cstate=0`:禁止 CPU 进入节能状态,避免唤醒延迟(代价是功耗飙升,发热严重)。
 - `mitigations=off`:关掉 Spectre/Meltdown 缓解(自行评估安全 vs 性能的权衡)。
+- `tsc=reliable`:跳过开机 TSC 同步校验、关闭 clocksource watchdog,省去 watchdog 定时器带来的抖动;代价是 2.4 节"内核替你验证"这层保险没有了,同步真被破坏时无人报警。建议先在不带此参数的内核下确认 dmesg 干净,再加上它。
 
 把交易热路径线程 pin 到这些隔离核:
 
@@ -559,7 +580,7 @@ Gil Tene 反复强调的经典陷阱:如果系统卡住 100 ms,而你的测试�
 
 1. **用 `CLOCK_REALTIME` 算耗时或定时**:NTP slew、跳变会让你得到负延迟、异常大值,或者周期任务永远不触发。耗时和定时永远用 `CLOCK_MONOTONIC` 或 TSC。
 2. **裸 `rdtsc` 不加 fence**:CPU 乱序会让测量点漂移几十周期甚至更多。
-3. **忘记 pin CPU**:线程被调度迁移,TSC 跨核(尤其跨 socket)可能不同步,减出来甚至得负数。
+3. **忘记 pin CPU**:健康裸机上跨核 TSC 本身可减(见 2.4),但线程迁移会引入微秒级调度噪声和缓存失效;虚拟机与 S3/热插拔等异常路径上,跨核偏移则是真实风险。热路径线程永远 pin 死。
 4. **开 Turbo Boost 做基准**:频率浮动会让同一段代码的执行周期数每次不同。
 5. **在热路径用 `printf`/`snprintf`**:一次格式化几微秒,瞬间毁掉所有埋点工作。
 6. **用均值看延迟**:永远看百分位,且至少看到 p99.99。
@@ -614,7 +635,7 @@ Gil Tene 反复强调的经典陷阱:如果系统卡住 100 ms,而你的测试�
 
 HFT 的时间测量不是"调用个 API 就行"的事——它是一套贯穿硬件、内核、网卡、协议栈、应用代码的系统工程。把所有规则浓缩成几条:
 
-1. **测纳秒级耗时用 TSC**,前提是 invariant TSC + 线程 pin 在同一 core。
+1. **测纳秒级耗时用 TSC**,前提是 invariant TSC + clocksource 为 tsc;个位数纳秒精度需同核读数,生产线程照例 pin 死。
 2. **本机间隔与超时用 `CLOCK_MONOTONIC`**,绝不用墙钟,否则 NTP 跳变会咬人。
 3. **跨机器比较用 `CLOCK_REALTIME`/`CLOCK_TAI` + PTP**,两端时间基准必须显式约定一致。
 4. **日志绝对时间用 `CLOCK_TAI` + PTP**,合规审计时同时记录 offset。
