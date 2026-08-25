@@ -5,9 +5,7 @@ draft = false
 tags = ["Memory", "Linux", "Performance"]
 +++
 
-# 虚拟内存与 Page Table:从一次访存看懂 MMU、TLB、Page Fault 的完整机制
-
-进程隔离、共享内存、huge page、lazy allocation、段错误——这些看似独立的现象,底层是同一个机制的不同侧面:**page table(页表)**。本文从零把它讲透,并在最后把上述现象逐一"接回"这张表。
+> 进程隔离、共享内存、huge page、lazy allocation、段错误——这些看似独立的现象,底层是同一个机制的不同侧面:**page table(页表)**。本文从零把它讲透,并在最后把上述现象逐一"接回"这张表。
 
 ## 0. 起点:程序里的地址全是虚拟的
 
