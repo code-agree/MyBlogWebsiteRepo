@@ -130,6 +130,7 @@ draft = true
 | 2026-08-24-simd.md | `["HFT", "Performance", "C++"]` |
 | 2026-08-25-page_table.md | `["Memory", "Linux", "Performance"]` |
 | 2026-08-26-rdtsc.md | `["Performance", "HFT", "Linux"]` |
+| 2026-08-27-low_latency_socket.md | `["Network", "HFT", "Performance", "Linux"]` |
 
 ## 五、后续维护
 
