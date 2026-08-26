@@ -129,6 +129,7 @@ draft = true
 | 2026-08-07-spsc_queue_mengrao.md | `["Concurrency", "HFT", "C++", "LockFree"]` |
 | 2026-08-24-simd.md | `["HFT", "Performance", "C++"]` |
 | 2026-08-25-page_table.md | `["Memory", "Linux", "Performance"]` |
+| 2026-08-26-rdtsc.md | `["Performance", "HFT", "Linux"]` |
 
 ## 五、后续维护
 
