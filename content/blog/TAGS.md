@@ -131,6 +131,7 @@ draft = true
 | 2026-08-25-page_table.md | `["Memory", "Linux", "Performance"]` |
 | 2026-08-26-rdtsc.md | `["Performance", "HFT", "Linux"]` |
 | 2026-08-27-low_latency_socket.md | `["Network", "HFT", "Performance", "Linux"]` |
+| 2026-11-17-cloud_dpdk_rx_timestamp.md | `["HFT", "Network", "Performance", "Linux"]` |
 
 ## 五、后续维护
 
